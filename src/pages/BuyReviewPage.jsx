@@ -3,6 +3,7 @@ import ReviewModal from "../util/ReviewModal";
 import { FaStar, FaStarHalf } from "react-icons/fa"; // 별 아이콘을 사용하기 위한 import
 import BookPurchase from "../components/PurchaseComponent";
 import ReviewSection from "../components/ReviewComponent";
+import LoginLogoutButton from "../components/LoginLogoutButtonComponent";
 
 const BuyReviewPg = () => {
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
@@ -69,6 +70,7 @@ const BuyReviewPg = () => {
 
   return (
     <div>
+      <LoginLogoutButton />
       <BookPurchase
         info={bookInfo}
         isLoggedIn={isLoggedIn}

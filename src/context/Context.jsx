@@ -3,11 +3,11 @@ import { createContext, useContext, useState } from "react";
 
 const UserContext = createContext();
 
-export function useUser() {
+export const useUser = () => {
   return useContext(UserContext);
-}
+};
 
-export function UserProvider({ children }) {
+export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(null); // 사용자 정보 상태
   const [isAuthenticated, setIsAuthenticated] = useState(false); // 로그인 상태
 
@@ -26,4 +26,4 @@ export function UserProvider({ children }) {
       {children}
     </UserContext.Provider>
   );
-}
+};

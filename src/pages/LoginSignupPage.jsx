@@ -17,9 +17,10 @@ import {
   ErrorText,
 } from "../components/LoginComponent";
 import AxiosApi from "../api/AxiosApi";
-import { Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Modal from "../util/LoginModal";
 import EmailVerificationComponent from "../components/MailComponent";
+import { useUser } from "../context/Context";
 
 const Login = () => {
   const [socialImage, setSocialImage] = useState(KakaoColorImg); // 초기 이미지 설정
@@ -29,6 +30,8 @@ const Login = () => {
   const [inputPw, setInputPwd] = useState("");
   const [isVerified, setIsVerified] = useState(false);
   const navigate = useNavigate();
+
+  const { login, isAuthenticated } = useUser();
 
   const closeModal = () => {
     setLoginModalOpen(false);
@@ -114,32 +117,36 @@ const Login = () => {
     } else {
       setIsSubmitDisabled(true);
     }
+    if (isAuthenticated) {
+      navigate("/purchase");
+    }
   }, [signUpData, isVerified]);
 
   const textChange = (e) => {
     const { name, value } = e.target;
     setSignUpData({ ...signUpData, [name]: value });
   };
-  const hashPassword = (password) => {
-    const encoder = new TextEncoder();
-    const data = encoder.encode(password);
-    return window.crypto.subtle.digest("SHA-256", data).then((arrayBuffer) => {
-      const hashArray = Array.from(new Uint8Array(arrayBuffer));
-      const hashBase64 = btoa(String.fromCharCode(...hashArray));
-      return hashBase64;
-    });
-  };
+  // const hashPassword = async (password) => {
+  //   const encoder = new TextEncoder();
+  //   const data = encoder.encode(password);
+  //   const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+  //   const hashArray = Array.from(new Uint8Array(hashBuffer));
+  //   const hashHex = hashArray
+  //     .map((byte) => (byte & 0xff).toString(16).padStart(2, "0"))
+  //     .join("");
+  //   return hashHex;
+  // };
 
   const loginSubmit = async (e) => {
     e.preventDefault();
-    const hashedPw = await hashPassword(inputPw);
-    const res = await AxiosApi.memberLogin(inputId, hashedPw);
+    // const hashedPw = await hashPassword(inputPw);
+    const res = await AxiosApi.memberLogin(inputId, inputPw);
     console.log(res.data);
     if (res.data === true) {
-      window.localStorage.setItem("userId", inputId); // 브라우저에서 임시로 값을 저장하는 기술
+      window.localStorage.setItem("userId", inputId);
       window.localStorage.setItem("userPw", inputPw);
       window.localStorage.setItem("isLogin", "TRUE");
-      navigate("/purchase"); // 이렇게 경로 변경
+      login(inputId, inputPw);
     } else {
       setLoginModalOpen(true);
     }
@@ -227,6 +234,7 @@ const Login = () => {
                 name="email"
                 placeholder="Email"
                 value={signUpData.email}
+                disabled={isVerified}
                 onChange={textChange}
               />
               {dataErrors.email && <ErrorText>{dataErrors.email}</ErrorText>}

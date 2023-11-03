@@ -10,6 +10,7 @@ const AxiosApi = {
     };
     return await axios.post(DOMAIN + "/users/login", login);
   },
+
   // 회원가입
   memberSignup: async (id, password, email, phone) => {
     const signupData = {
@@ -22,11 +23,13 @@ const AxiosApi = {
     };
     return await axios.post(DOMAIN + "/users/signup", signupData);
   },
+
   // 이메일 보내기
   sendVerificationEmail: async (email) => {
     const sendEmail = {
       email: email,
     };
+
     return await axios.post(`${DOMAIN}/api/send-email`, sendEmail);
   },
 
