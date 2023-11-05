@@ -20,7 +20,6 @@ import AxiosApi from "../api/AxiosApi";
 import { useNavigate } from "react-router-dom";
 import Modal from "../util/LoginModal";
 import EmailVerificationComponent from "../components/MailComponent";
-import { useUser } from "../context/Context";
 
 const Login = () => {
   const [socialImage, setSocialImage] = useState(KakaoColorImg); // 초기 이미지 설정
@@ -30,8 +29,6 @@ const Login = () => {
   const [inputPw, setInputPwd] = useState("");
   const [isVerified, setIsVerified] = useState(false);
   const navigate = useNavigate();
-
-  const { login, isAuthenticated } = useUser();
 
   const closeModal = () => {
     setLoginModalOpen(false);
@@ -117,36 +114,27 @@ const Login = () => {
     } else {
       setIsSubmitDisabled(true);
     }
-    if (isAuthenticated) {
-      navigate("/purchase");
-    }
   }, [signUpData, isVerified]);
 
   const textChange = (e) => {
     const { name, value } = e.target;
     setSignUpData({ ...signUpData, [name]: value });
   };
-  // const hashPassword = async (password) => {
-  //   const encoder = new TextEncoder();
-  //   const data = encoder.encode(password);
-  //   const hashBuffer = await crypto.subtle.digest("SHA-256", data);
-  //   const hashArray = Array.from(new Uint8Array(hashBuffer));
-  //   const hashHex = hashArray
-  //     .map((byte) => (byte & 0xff).toString(16).padStart(2, "0"))
-  //     .join("");
-  //   return hashHex;
-  // };
 
   const loginSubmit = async (e) => {
     e.preventDefault();
-    // const hashedPw = await hashPassword(inputPw);
     const res = await AxiosApi.memberLogin(inputId, inputPw);
     console.log(res.data);
-    if (res.data === true) {
+    if (res.data) {
       window.localStorage.setItem("userId", inputId);
       window.localStorage.setItem("userPw", inputPw);
       window.localStorage.setItem("isLogin", "TRUE");
-      login(inputId, inputPw);
+      // 로그인이 성공하면 토큰을 클라이언트에 저장
+      const token = res.data; // 토큰은 응답 데이터에서 가져와야 합니다
+      if (token) {
+        localStorage.setItem("authToken", token); // 토큰을 로컬 스토리지에 저장
+      }
+      navigate("/purchase");
     } else {
       setLoginModalOpen(true);
     }
