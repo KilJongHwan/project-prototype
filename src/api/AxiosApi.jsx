@@ -10,6 +10,9 @@ const AxiosApi = {
     };
     return await axios.post(DOMAIN + "/users/login", login);
   },
+  checkLogin: async () => {
+    return await axios.get(DOMAIN + "/users/check-login");
+  },
 
   // 회원가입
   memberSignup: async (id, password, email, phone) => {

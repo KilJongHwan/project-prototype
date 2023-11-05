@@ -28,6 +28,7 @@ const Login = () => {
   const [inputId, setInputId] = useState("");
   const [inputPw, setInputPwd] = useState("");
   const [isVerified, setIsVerified] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false); // 추가: 로그인 상태
   const navigate = useNavigate();
 
   const closeModal = () => {
@@ -70,6 +71,16 @@ const Login = () => {
   };
 
   useEffect(() => {
+    const checkLoginStatus = async () => {
+      try {
+        const response = await AxiosApi.checkLogin();
+        setIsLoggedIn(response.data === "User is logged in");
+      } catch (error) {
+        console.error("Error checking login status:", error);
+      }
+      console.log(isLoggedIn);
+    };
+
     const validateForm = () => {
       const idRegex = /^[a-zA-Z0-9]{8,20}$/;
       const passwordRegex =
@@ -102,6 +113,7 @@ const Login = () => {
     };
 
     validateForm();
+    checkLoginStatus();
 
     if (
       dataErrors.id === false &&
