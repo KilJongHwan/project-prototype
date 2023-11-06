@@ -4,23 +4,24 @@ import { useUser } from "../context/Context";
 import AxiosApi from "../api/AxiosApi";
 
 const LoginLogoutButton = () => {
-  const { isAuthed, logout } = useUser();
-  const navigate = useNavigate(); // 사용자의 경로 변경을 위해 사용
+  const { isLoggedin, logout, token } = useUser();
+  const navigate = useNavigate();
 
-  const handleLoginLogout = async () => {
-    if (isAuthed) {
+  const logoutButton = async () => {
+    if (isLoggedin) {
       // 이미 로그인된 경우 로그아웃 처리
-      await AxiosApi.logout(); // AxiosApi에서 로그아웃 처리하는 메서드를 추가해야 합니다.
+      await AxiosApi.memberLogout(token);
       logout();
-      navigate("/"); // 로그아웃 후 홈페이지 또는 원하는 경로로 이동
+      localStorage.clear();
+      navigate("/");
     } else {
       // 로그인되지 않은 경우 로그인 페이지로 이동
-      navigate("/login"); // 로그인 페이지로 이동
+      navigate("/login");
     }
   };
 
   return (
-    <button onClick={handleLoginLogout}>{isAuthed ? "Logout" : "Login"}</button>
+    <button onClick={logoutButton}>{isLoggedin ? "Logout" : "Login"}</button>
   );
 };
 

@@ -20,6 +20,7 @@ import AxiosApi from "../api/AxiosApi";
 import { useNavigate } from "react-router-dom";
 import Modal from "../util/LoginModal";
 import EmailVerificationComponent from "../components/MailComponent";
+import { useUser } from "../context/Context";
 
 const Login = () => {
   const [socialImage, setSocialImage] = useState(KakaoColorImg); // 초기 이미지 설정
@@ -28,7 +29,8 @@ const Login = () => {
   const [inputId, setInputId] = useState("");
   const [inputPw, setInputPwd] = useState("");
   const [isVerified, setIsVerified] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false); // 추가: 로그인 상태
+  const { isLoggedin, checkLoginStatus, login } = useUser();
+
   const navigate = useNavigate();
 
   const closeModal = () => {
@@ -71,16 +73,6 @@ const Login = () => {
   };
 
   useEffect(() => {
-    const checkLoginStatus = async () => {
-      try {
-        const response = await AxiosApi.checkLogin();
-        setIsLoggedIn(response.data === "User is logged in");
-      } catch (error) {
-        console.error("Error checking login status:", error);
-      }
-      console.log(isLoggedIn);
-    };
-
     const validateForm = () => {
       const idRegex = /^[a-zA-Z0-9]{8,20}$/;
       const passwordRegex =
@@ -114,6 +106,13 @@ const Login = () => {
 
     validateForm();
     checkLoginStatus();
+    const checkAndRedirect = async () => {
+      await checkLoginStatus(); // 로그인 상태 확인
+      if (isLoggedin) {
+        navigate("/purchase"); // 원하는 페이지로 리다이렉트
+      }
+    };
+    checkAndRedirect();
 
     if (
       dataErrors.id === false &&
@@ -126,7 +125,7 @@ const Login = () => {
     } else {
       setIsSubmitDisabled(true);
     }
-  }, [signUpData, isVerified]);
+  }, [signUpData, isVerified, isLoggedin]);
 
   const textChange = (e) => {
     const { name, value } = e.target;
@@ -142,10 +141,14 @@ const Login = () => {
       window.localStorage.setItem("userPw", inputPw);
       window.localStorage.setItem("isLogin", "TRUE");
       // 로그인이 성공하면 토큰을 클라이언트에 저장
-      const token = res.data; // 토큰은 응답 데이터에서 가져와야 합니다
+      const token = res.data; // 토큰 응답 데이터
+      console.log(token);
+
       if (token) {
-        localStorage.setItem("authToken", token); // 토큰을 로컬 스토리지에 저장
+        window.localStorage.setItem("authToken", token); // 토큰을 로컬 스토리지에 저장
+        login(res, token);
       }
+
       navigate("/purchase");
     } else {
       setLoginModalOpen(true);
