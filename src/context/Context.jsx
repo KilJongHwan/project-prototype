@@ -17,6 +17,7 @@ export const UserProvider = ({ children }) => {
     setUser(userData);
     setToken(userToken);
     setIsLoggedin(true);
+    console.log(user);
   };
 
   const logout = () => {
@@ -30,9 +31,10 @@ export const UserProvider = ({ children }) => {
     try {
       const token = window.localStorage.getItem("authToken"); // 로컬 스토리지에서 토큰 가져오기
       const response = await AxiosApi.checkLogin(token); // 토큰을 인자로 전달
-      if (response.data === "User is logged in") {
-        login(response.data, token);
-        console.log("로그인 상태");
+      console.log(response.data);
+      if (response.data.message === "User is logged in") {
+        login(response.data.user, token); // 사용자 정보와 토큰을 상태에 저장
+        console.log(`로그인 상태`);
       } else {
         logout();
         console.log("로그아웃 상태");

@@ -1,6 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faFacebook } from "@fortawesome/free-brands-svg-icons";
 import KakaoColorImg from "../images/kakao_color.png";
 import KakaoImg from "../images/kakao_white.png";
 import {
@@ -178,9 +176,6 @@ const Login = () => {
               <h1>Sign In</h1>
               <SocialLinks>
                 <SocialLink>
-                  <FontAwesomeIcon icon={faFacebook} />
-                </SocialLink>
-                <SocialLink>
                   <img
                     src={socialImage}
                     alt="cacao"
@@ -189,7 +184,6 @@ const Login = () => {
                     onMouseLeave={socialLeave}
                   />
                 </SocialLink>
-                <SocialLink></SocialLink>
               </SocialLinks>
               <span>or use your account</span>
               <Input

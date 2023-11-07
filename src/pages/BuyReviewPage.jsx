@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import ReviewModal from "../util/ReviewModal";
-import { FaStar, FaStarHalf } from "react-icons/fa"; // 별 아이콘을 사용하기 위한 import
 import BookPurchase from "../components/PurchaseComponent";
 import ReviewSection from "../components/ReviewComponent";
 import LoginLogoutButton from "../components/LoginLogoutButtonComponent";
@@ -13,6 +12,21 @@ const BuyReviewPg = () => {
   const [reviews, setReviews] = useState([]); // 리뷰 데이터를 관리하는 상태
   const { isLoggedin, checkLoginStatus, user } = useUser();
   const navigate = useNavigate();
+
+  const bookInfo = {
+    id: 21,
+    title: "책 제목",
+    author: "작가",
+    publisher: "출판사",
+    genre: "소설",
+    imageUrl: "https://via.placeholder.com/160x100",
+    contentUrl: "https://example.com/book-content",
+    summary: "책 요약...",
+    price: 15000,
+    publishYear: new Date(2022, 0, 1), // 2022년 1월 1일
+    entryTime: new Date(), // 현재 시간
+    purchaseCount: 0,
+  };
 
   useEffect(() => {
     checkLoginStatus();
@@ -39,12 +53,13 @@ const BuyReviewPg = () => {
         user.id, // 현재 사용자의 ID
         bookInfo.id, // 현재 책의 ID
         reviewData.reviewText,
-        reviewData.reviRating
+        reviewData.rating
       );
 
-      if (response.status === 200) {
+      if (response.status === 201) {
         // 성공적으로 데이터가 전송되었으면, 리뷰 목록에 새 리뷰 추가
         setReviews([...reviews, reviewData]);
+
         closeReviewModal();
       } else {
         // 서버에서 응답이 오지 않거나, 응답의 상태 코드가 200이 아닌 경우 에러 처리
@@ -55,6 +70,7 @@ const BuyReviewPg = () => {
       console.error("Failed to submit review:", error);
     }
   };
+
   // 책 구매 여부 (예: true - 이미 구매한 책, false - 아직 구매하지 않은 책)
   const isPurchased = false; // 또는 true
 
@@ -66,42 +82,6 @@ const BuyReviewPg = () => {
 
   // 미리보기 함수
   const viewPreview = () => {};
-
-  const bookInfo = {
-    id: 1,
-    title: "책 제목",
-    author: "작가",
-    publisher: "출판사",
-    genre: "소설",
-    imageUrl: "https://via.placeholder.com/160x100",
-    contentUrl: "https://example.com/book-content",
-    summary: "책 요약...",
-    price: 15000,
-    publishYear: new Date(2022, 0, 1), // 2022년 1월 1일
-    entryTime: new Date(), // 현재 시간
-    purchaseCount: 0,
-  };
-
-  // 평균 별점 계산
-  const totalRatings = reviews.length;
-  const totalRatingSum = reviews.reduce(
-    (sum, review) => sum + review.rating,
-    0
-  );
-  const averageRating = totalRatings > 0.0 ? totalRatingSum / totalRatings : 0;
-
-  // 별 아이콘을 표시하기 위한 배열 생성
-  const stars = [];
-
-  for (let i = 1; i <= 5; i++) {
-    if (i <= averageRating) {
-      stars.push(<FaStar key={i} color="#AAB9FF" />);
-    } else if (i - 0.5 <= averageRating) {
-      stars.push(<FaStarHalf key={i} color="#AAB9FF" />);
-    } else {
-      stars.push(<FaStar key={i} color="gray" />);
-    }
-  }
 
   return (
     <div>
@@ -120,13 +100,7 @@ const BuyReviewPg = () => {
         closeModal={closeReviewModal}
         onSubmit={reviewSubmit}
       />
-      <ReviewSection
-        averageRating={averageRating}
-        stars={stars}
-        totalRatings={totalRatings}
-        reviews={reviews}
-        openReviewModal={openReviewModal}
-      />
+      <ReviewSection openReviewModal={openReviewModal} bookInfo={bookInfo} />
     </div>
   );
 };

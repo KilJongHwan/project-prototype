@@ -62,6 +62,11 @@ const ReviewModal = ({ isOpen, closeModal, onSubmit }) => {
   };
 
   const submitReview = () => {
+    if (!reviewText.trim()) {
+      // 텍스트가 비어 있는지 확인
+      alert("리뷰 내용을 입력해주세요."); // 알림 표시
+      return;
+    }
     onSubmit({ rating, reviewText });
     closeModal();
   };
@@ -87,7 +92,9 @@ const ReviewModal = ({ isOpen, closeModal, onSubmit }) => {
                     onClick={() => ratingChange(value)}
                     onMouseEnter={() => mouseEnter(value)}
                     onMouseLeave={mouseLeave}
-                    color={value <= (hoverRating || rating) ? "yellow" : "gray"}
+                    color={
+                      value <= (hoverRating || rating) ? "#AAB9FF" : "gray"
+                    }
                   />
                 ))}
               </StarRating>
@@ -98,6 +105,7 @@ const ReviewModal = ({ isOpen, closeModal, onSubmit }) => {
                 id="reviewText"
                 value={reviewText}
                 onChange={reviewTextChange}
+                required
               />
             </div>
             <button onClick={submitReview}>리뷰 제출</button>

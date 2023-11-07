@@ -1,4 +1,8 @@
+import { useEffect, useState } from "react";
 import styled from "styled-components";
+import { useUser } from "../context/Context";
+import AxiosApi from "../api/AxiosApi";
+import { FaStar, FaStarHalf } from "react-icons/fa"; // 별 아이콘을 사용하기 위한 import
 
 const ReviewSectionContainer = styled.div`
   padding: 0 30px 70px 30px;
@@ -68,13 +72,60 @@ const ReviewSectionContainer = styled.div`
   }
 `;
 
-const ReviewSection = ({
-  averageRating,
-  stars,
-  totalRatings,
-  reviews,
-  openReviewModal,
-}) => {
+const ReviewSection = ({ openReviewModal, bookInfo }) => {
+  const { isLoggedin, checkLoginStatus } = useUser();
+  const [reviews, setReviews] = useState([]);
+
+  const [averageRating, setAverageRating] = useState(0);
+  const [totalRatings, setTotalRatings] = useState(0);
+  const stars = [];
+
+  for (let i = 1; i <= 5; i++) {
+    if (i <= averageRating) {
+      stars.push(<FaStar key={i} color="#AAB9FF" />);
+    } else if (i - 0.5 <= averageRating) {
+      stars.push(<FaStarHalf key={i} color="#AAB9FF" />);
+    } else {
+      stars.push(<FaStar key={i} color="gray" />);
+    }
+  }
+  // 리뷰 데이터를 가져오는 함수
+  const fetchReviews = async () => {
+    try {
+      const response = await AxiosApi.getReviews(bookInfo.id);
+      console.log("bookInfo.id:", bookInfo.id); // 책 ID 출력
+      if (response.status === 200) {
+        setReviews(response.data);
+      } else {
+        console.error("Failed to fetch reviews");
+      }
+    } catch (error) {
+      console.error("Failed to fetch reviews:", error);
+    }
+  };
+  const fetchReviewStats = async () => {
+    try {
+      const response = await AxiosApi.getReviewStats(bookInfo.id);
+      console.log(response);
+      if (response.status === 200) {
+        setAverageRating(response.data.averageRating);
+        setTotalRatings(response.data.totalReviews);
+      } else {
+        console.error("Failed to fetch review stats");
+      }
+    } catch (error) {
+      console.error("Failed to fetch review stats:", error);
+    }
+  };
+  // useEffect 2개 쓴이유 동시 데이터베이스 접속하면 에러나서 그랬습니다.
+  useEffect(() => {
+    checkLoginStatus();
+    fetchReviews();
+  }, []);
+  useEffect(() => {
+    fetchReviewStats();
+  }, []);
+
   return (
     <ReviewSectionContainer>
       <h2>리뷰</h2>
@@ -83,14 +134,16 @@ const ReviewSection = ({
           <p>평균 평점: {averageRating.toFixed(1)}</p>
           <p>별 개수: {stars}</p>
           <p>리뷰 개수: {totalRatings}</p>
-          <button onClick={openReviewModal}>Review Modal 열기</button>
+          <button onClick={openReviewModal}>Review 작성</button>
         </div>
       </div>
       <ul>
         {reviews.map((review, index) => (
           <li key={index}>
             <p className="review-rating">평점: {review.rating}</p>
-            <p className="review-text">리뷰: {review.reviewText}</p>
+            <p className="review-nickname">닉네임: {review.memberName}</p>{" "}
+            <p className="review-id">작성자 ID: {review.memberId}</p>{" "}
+            <p className="review-content">컨텐트: {review.content}</p>
           </li>
         ))}
       </ul>

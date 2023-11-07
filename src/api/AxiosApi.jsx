@@ -11,12 +11,14 @@ const AxiosApi = {
     return await axios.post(DOMAIN + "/users/login", login);
   },
   checkLogin: async (token) => {
-    return await axios.get(DOMAIN + "/users/check-login", {
+    const response = await axios.get(DOMAIN + "/users/check-login", {
       headers: {
-        Authorization: `Bearer ${token}`, // JWT 토큰을 Bearer 형식으로 설정
+        Authorization: `Bearer ${token}`,
       },
     });
+    return response;
   },
+
   // 로그아웃
   memberLogout: async (id, password, token) => {
     const logout = {
@@ -59,14 +61,20 @@ const AxiosApi = {
   },
 
   // 리뷰 데이터
-  reviewData: async (memberId, bookId, reviewText, reviewRating) => {
+  reviewData: async (memberId, bookId, content, rating) => {
     const reviewData = {
       memberId: memberId,
       bookId: bookId,
-      reviewText: reviewText,
-      reviewScore: reviewRating,
+      content: content,
+      rating: rating,
     };
     return await axios.post(`${DOMAIN}/purchase/review`, reviewData);
+  },
+  getReviews: async (bookid) => {
+    return await axios.get(`${DOMAIN}/purchase/reviewdata/${bookid}`);
+  },
+  getReviewStats: async (bookId) => {
+    return await axios.get(`${DOMAIN}/purchase/reviewdata/stats/${bookId}`);
   },
 };
 
