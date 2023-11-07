@@ -75,7 +75,18 @@ const BuyReviewPg = () => {
   const isPurchased = false; // 또는 true
 
   // 장바구니에 담기 함수
-  const addToCart = () => {};
+  const addToCart = async () => {
+    try {
+      const response = await AxiosApi.addToCart(user.id, bookInfo.id);
+      if (response.status === 200) {
+        alert("장바구니에 담겼습니다.");
+      } else {
+        console.error("Failed to add item to cart");
+      }
+    } catch (error) {
+      console.error("Failed to add item to cart:", error);
+    }
+  };
 
   // 책 구매 함수
   const purchaseBook = () => {};
