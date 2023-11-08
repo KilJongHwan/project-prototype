@@ -10,8 +10,9 @@ import AxiosApi from "../api/AxiosApi";
 const BuyReviewPg = () => {
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
   const [reviews, setReviews] = useState([]); // 리뷰 데이터를 관리하는 상태
-  const { isLoggedin, checkLoginStatus, user } = useUser();
+  const { isLoggedin, checkLoginStatus, user, login } = useUser();
   const navigate = useNavigate();
+  // const [bookInfo, setBookInfo] = useState(null);
 
   const bookInfo = {
     id: 21,
@@ -30,6 +31,12 @@ const BuyReviewPg = () => {
 
   useEffect(() => {
     checkLoginStatus();
+  }, [isLoggedin]);
+
+  useEffect(() => {
+    if (isLoggedin) {
+      console.log(user);
+    }
   }, [isLoggedin]);
   const openReviewModal = () => {
     if (isLoggedin) {
@@ -63,28 +70,44 @@ const BuyReviewPg = () => {
         closeReviewModal();
       } else {
         // 서버에서 응답이 오지 않거나, 응답의 상태 코드가 200이 아닌 경우 에러 처리
-        console.error("Failed to submit review");
+        console.error("서버 응답 실패");
       }
     } catch (error) {
       // 네트워크 요청 중에 오류가 발생한 경우 에러 처리
-      console.error("Failed to submit review:", error);
+      console.error("submit review 데이터에러 :", error);
     }
   };
-
+  const fetchBookInfo = async () => {
+    try {
+      const response = await AxiosApi.getBookInfo(21); // 책의 id를 이용하여 책의 정보를 가져옵니다.
+      if (response.status === 200) {
+        // setBookInfo(response.data);
+      } else {
+        console.error("책 정보 가져오기 실패");
+      }
+    } catch (error) {
+      console.error("에러 확인", error);
+    }
+  };
   // 책 구매 여부 (예: true - 이미 구매한 책, false - 아직 구매하지 않은 책)
   const isPurchased = false; // 또는 true
 
-  // 장바구니에 담기 함수
   const addToCart = async () => {
-    try {
-      const response = await AxiosApi.addToCart(user.id, bookInfo.id);
-      if (response.status === 200) {
-        alert("장바구니에 담겼습니다.");
-      } else {
-        console.error("Failed to add item to cart");
+    if (user) {
+      // user 객체가 있을 때만 실행
+      try {
+        const response = await AxiosApi.addToCart(user.id, bookInfo.id);
+        if (response.status === 200) {
+          // ...
+          navigate("/cart");
+        } else {
+          console.error("장바구니 담기기 에러");
+        }
+      } catch (error) {
+        console.error("에러 확인", error);
       }
-    } catch (error) {
-      console.error("Failed to add item to cart:", error);
+    } else {
+      alert("로그인이 필요합니다.");
     }
   };
 

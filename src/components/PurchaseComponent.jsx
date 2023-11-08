@@ -136,7 +136,7 @@ const BookPurchase = ({
       <PurchaseModal
         isOpen={purchaseModalOpen}
         closeModal={closePurchaseModal}
-        onConfirm={onPurchase}
+        onConfirm={purchaseBook}
         action="purchase"
       />
     </BookPurchaseBlock>

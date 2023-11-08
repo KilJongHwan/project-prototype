@@ -76,6 +76,24 @@ const AxiosApi = {
   getReviewStats: async (bookId) => {
     return await axios.get(`${DOMAIN}/purchase/reviewdata/stats/${bookId}`);
   },
+
+  // 장바구니 아이템 추가
+  addToCart: async (memberId, bookId) => {
+    return await axios.post(`${DOMAIN}/cart/add`, { memberId, bookId });
+  },
+  // 장바구니 아이템 가져오기
+  getCartItems: async (memberId) => {
+    return await axios.get(`${DOMAIN}/cart/${memberId}`);
+  },
+
+  // 장바구니 아이템 제거
+  removeFromCart: async (memberId, bookId) => {
+    return await axios.delete(`${DOMAIN}/cart/${memberId}/${bookId}`);
+  },
+  // 책 정보 가져오기
+  getBookInfo: async (bookId) => {
+    return await axios.get(`${DOMAIN}/books/${bookId}`);
+  },
 };
 
 export default AxiosApi;

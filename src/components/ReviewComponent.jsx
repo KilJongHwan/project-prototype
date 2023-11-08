@@ -138,14 +138,22 @@ const ReviewSection = ({ openReviewModal, bookInfo }) => {
         </div>
       </div>
       <ul>
-        {reviews.map((review, index) => (
-          <li key={index}>
-            <p className="review-rating">평점: {review.rating}</p>
-            <p className="review-nickname">닉네임: {review.memberName}</p>{" "}
-            <p className="review-id">작성자 ID: {review.memberId}</p>{" "}
-            <p className="review-content">컨텐트: {review.content}</p>
+        {reviews.length === 0 ? (
+          <li>
+            <p>리뷰가 없습니다.</p>
           </li>
-        ))}
+        ) : (
+          reviews.map((review, index) => (
+            <li key={index}>
+              <p className="review-rating">평점: {review.rating}</p>
+              <p className="review-nickname">
+                닉네임: {review.memberName}
+              </p>{" "}
+              <p className="review-id">작성자 ID: {review.memberId}</p>{" "}
+              <p className="review-content">컨텐트: {review.content}</p>
+            </li>
+          ))
+        )}
       </ul>
     </ReviewSectionContainer>
   );

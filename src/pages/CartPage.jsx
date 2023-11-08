@@ -37,12 +37,21 @@ const CartPage = ({ memberId }) => {
     try {
       const response = await AxiosApi.getCartItems(memberId);
       if (response.status === 200) {
-        setCartItems(response.data);
+        const cartItemsWithBookInfo = await Promise.all(
+          response.data.map(async (item) => {
+            const bookResponse = await AxiosApi.getBookInfo(item.bookId);
+            return {
+              ...item,
+              bookInfo: bookResponse.data,
+            };
+          })
+        );
+        setCartItems(cartItemsWithBookInfo);
       } else {
-        console.error("Failed to fetch cart items");
+        console.error("짱바구니 가져오기 실패");
       }
     } catch (error) {
-      console.error("Failed to fetch cart items:", error);
+      console.error("에러 확인", error);
     }
   };
 
@@ -52,10 +61,10 @@ const CartPage = ({ memberId }) => {
       if (response.status === 200) {
         fetchCartItems(); // 장바구니 아이템 제거 후 장바구니 아이템 목록을 다시 불러옴
       } else {
-        console.error("Failed to remove item from cart");
+        console.error("장바구니 아이템 목록 가져오기 실패");
       }
     } catch (error) {
-      console.error("Failed to remove item from cart:", error);
+      console.error("에러 확인", error);
     }
   };
 

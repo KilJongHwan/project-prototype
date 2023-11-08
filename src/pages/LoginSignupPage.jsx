@@ -19,6 +19,7 @@ import { useNavigate } from "react-router-dom";
 import Modal from "../util/LoginModal";
 import EmailVerificationComponent from "../components/MailComponent";
 import { useUser } from "../context/Context";
+import sha256 from "crypto-js/sha256";
 
 const Login = () => {
   const [socialImage, setSocialImage] = useState(KakaoColorImg); // 초기 이미지 설정
@@ -27,7 +28,7 @@ const Login = () => {
   const [inputId, setInputId] = useState("");
   const [inputPw, setInputPwd] = useState("");
   const [isVerified, setIsVerified] = useState(false);
-  const { isLoggedin, checkLoginStatus, login } = useUser();
+  const { isLoggedin, checkLoginStatus, login, user } = useUser();
 
   const navigate = useNavigate();
 
@@ -104,13 +105,6 @@ const Login = () => {
 
     validateForm();
     checkLoginStatus();
-    const checkAndRedirect = async () => {
-      await checkLoginStatus(); // 로그인 상태 확인
-      if (isLoggedin) {
-        navigate("/purchase"); // 원하는 페이지로 리다이렉트
-      }
-    };
-    checkAndRedirect();
 
     if (
       dataErrors.id === false &&
@@ -123,7 +117,20 @@ const Login = () => {
     } else {
       setIsSubmitDisabled(true);
     }
-  }, [signUpData, isVerified, isLoggedin]);
+  }, [signUpData, isVerified]);
+
+  useEffect(() => {
+    if (isLoggedin) {
+      const checkAndRedirect = async () => {
+        await checkLoginStatus(); // 로그인 상태 확인
+        console.log(user);
+        if (isLoggedin) {
+          navigate("/purchase"); // 원하는 페이지로 리다이렉트
+        }
+      };
+      checkAndRedirect();
+    }
+  }, [user]);
 
   const textChange = (e) => {
     const { name, value } = e.target;
@@ -132,7 +139,8 @@ const Login = () => {
 
   const loginSubmit = async (e) => {
     e.preventDefault();
-    const res = await AxiosApi.memberLogin(inputId, inputPw);
+    const hashedPassword = sha256(inputPw).toString();
+    const res = await AxiosApi.memberLogin(inputId, hashedPassword);
     console.log(res.data);
     if (res.data) {
       window.localStorage.setItem("userId", inputId);
