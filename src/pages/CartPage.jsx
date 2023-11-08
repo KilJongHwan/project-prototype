@@ -36,6 +36,7 @@ const CartPage = ({ memberId }) => {
   const fetchCartItems = async () => {
     try {
       const response = await AxiosApi.getCartItems(memberId);
+      console.log(response); // 응답 출력
       if (response.status === 200) {
         const cartItemsWithBookInfo = await Promise.all(
           response.data.map(async (item) => {
@@ -73,7 +74,7 @@ const CartPage = ({ memberId }) => {
       <h2>장바구니</h2>
       {cartItems.map((item) => (
         <div key={item.bookId}>
-          <p>{item.bookTitle}</p>
+          <p>{item.bookInfo.title}</p>
           <button onClick={() => removeFromCart(item.bookId)}>제거</button>
         </div>
       ))}

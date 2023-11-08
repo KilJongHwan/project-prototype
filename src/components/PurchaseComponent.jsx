@@ -62,7 +62,7 @@ const BookPurchase = ({
   onPurchase,
   onPreview,
 }) => {
-  const { title, author, publisher, price, description, urlToImage } = info;
+  const { title, author, publisher, price, description, imageUrl } = info;
 
   const [cartModalOpen, setCartModalOpen] = useState(false);
   const [purchaseModalOpen, setPurchaseModalOpen] = useState(false);
@@ -100,7 +100,7 @@ const BookPurchase = ({
       <h2>책 정보</h2>
       <div className="contents">
         <div className="coverimg">
-          {urlToImage && <img src={urlToImage} alt="CoverImage" />}
+          {imageUrl && <img src={imageUrl} alt="CoverImage" />}
         </div>
         <div className="info">
           <h3>{title}</h3>

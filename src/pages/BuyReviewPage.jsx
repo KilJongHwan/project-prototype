@@ -12,32 +12,30 @@ const BuyReviewPg = () => {
   const [reviews, setReviews] = useState([]); // 리뷰 데이터를 관리하는 상태
   const { isLoggedin, checkLoginStatus, user, login } = useUser();
   const navigate = useNavigate();
-  // const [bookInfo, setBookInfo] = useState(null);
+  const [bookInfo, setBookInfo] = useState(null);
 
-  const bookInfo = {
-    id: 21,
-    title: "책 제목",
-    author: "작가",
-    publisher: "출판사",
-    genre: "소설",
-    imageUrl: "https://via.placeholder.com/160x100",
-    contentUrl: "https://example.com/book-content",
-    summary: "책 요약...",
-    price: 15000,
-    publishYear: new Date(2022, 0, 1), // 2022년 1월 1일
-    entryTime: new Date(), // 현재 시간
-    purchaseCount: 0,
-  };
+  // const bookInfo = {
+  //   id: 21,
+  //   title: "책 제목",
+  //   author: "작가",
+  //   publisher: "출판사",
+  //   genre: "소설",
+  //   imageUrl: "https://via.placeholder.com/160x100",
+  //   contentUrl: "https://example.com/book-content",
+  //   summary: "책 요약...",
+  //   price: 15000,
+  //   publishYear: new Date(2022, 0, 1), // 2022년 1월 1일
+  //   entryTime: new Date(), // 현재 시간
+  //   purchaseCount: 0,
+  // };
 
   useEffect(() => {
     checkLoginStatus();
   }, [isLoggedin]);
 
   useEffect(() => {
-    if (isLoggedin) {
-      console.log(user);
-    }
-  }, [isLoggedin]);
+    fetchBookInfo();
+  }, []);
   const openReviewModal = () => {
     if (isLoggedin) {
       // 로그인 상태 확인
@@ -79,16 +77,24 @@ const BuyReviewPg = () => {
   };
   const fetchBookInfo = async () => {
     try {
-      const response = await AxiosApi.getBookInfo(21); // 책의 id를 이용하여 책의 정보를 가져옵니다.
+      const response = await AxiosApi.getBookInfo(21);
       if (response.status === 200) {
-        // setBookInfo(response.data);
+        if (response.data !== null) {
+          setBookInfo(response.data);
+          console.log(response.data);
+        } else {
+          console.error("요청은 성공했지만, 반환된 책 정보가 null입니다.");
+        }
       } else {
-        console.error("책 정보 가져오기 실패");
+        console.error(
+          `책 정보를 가져오는 요청이 실패했습니다. 상태 코드: ${response.status}`
+        );
       }
     } catch (error) {
-      console.error("에러 확인", error);
+      console.error("책 정보를 가져오는 도중 에러가 발생했습니다:", error);
     }
   };
+
   // 책 구매 여부 (예: true - 이미 구매한 책, false - 아직 구매하지 않은 책)
   const isPurchased = false; // 또는 true
 
@@ -120,14 +126,16 @@ const BuyReviewPg = () => {
   return (
     <div>
       <LoginLogoutButton />
-      <BookPurchase
-        info={bookInfo}
-        isLoggedIn={isLoggedin}
-        isPurchased={isPurchased}
-        onAddToCart={addToCart}
-        onPurchase={purchaseBook}
-        onPreview={viewPreview}
-      />
+      {bookInfo && (
+        <BookPurchase
+          info={bookInfo}
+          isLoggedIn={isLoggedin}
+          isPurchased={isPurchased}
+          onAddToCart={addToCart}
+          onPurchase={purchaseBook}
+          onPreview={viewPreview}
+        />
+      )}
 
       <ReviewModal
         isOpen={isReviewModalOpen}

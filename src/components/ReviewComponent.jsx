@@ -91,19 +91,30 @@ const ReviewSection = ({ openReviewModal, bookInfo }) => {
   }
   // 리뷰 데이터를 가져오는 함수
   const fetchReviews = async () => {
+    if (!bookInfo) {
+      console.log(
+        "bookInfo is null. fetchReviews will be called again when bookInfo is set."
+      );
+      return;
+    }
     try {
       const response = await AxiosApi.getReviews(bookInfo.id);
-      console.log("bookInfo.id:", bookInfo.id); // 책 ID 출력
       if (response.status === 200) {
         setReviews(response.data);
       } else {
-        console.error("Failed to fetch reviews");
+        console.error("리뷰 가져오기 실패");
       }
     } catch (error) {
-      console.error("Failed to fetch reviews:", error);
+      console.error("리뷰 데이터 요청 에러", error);
     }
   };
   const fetchReviewStats = async () => {
+    if (!bookInfo) {
+      console.log(
+        "bookInfo is null. fetchReviewStats will be called again when bookInfo is set."
+      );
+      return;
+    }
     try {
       const response = await AxiosApi.getReviewStats(bookInfo.id);
       console.log(response);
@@ -120,11 +131,11 @@ const ReviewSection = ({ openReviewModal, bookInfo }) => {
   // useEffect 2개 쓴이유 동시 데이터베이스 접속하면 에러나서 그랬습니다.
   useEffect(() => {
     checkLoginStatus();
-    fetchReviews();
-  }, []);
+  }, [isLoggedin]);
   useEffect(() => {
+    fetchReviews();
     fetchReviewStats();
-  }, []);
+  }, [bookInfo]);
 
   return (
     <ReviewSectionContainer>
