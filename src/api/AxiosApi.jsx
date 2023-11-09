@@ -85,7 +85,6 @@ const AxiosApi = {
   getCartItems: async (memberId) => {
     return await axios.get(`${DOMAIN}/cart/${memberId}`);
   },
-
   // 장바구니 아이템 제거
   removeFromCart: async (memberId, bookId) => {
     return await axios.delete(`${DOMAIN}/cart/${memberId}/${bookId}`);

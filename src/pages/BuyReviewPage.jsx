@@ -10,32 +10,22 @@ import AxiosApi from "../api/AxiosApi";
 const BuyReviewPg = () => {
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
   const [reviews, setReviews] = useState([]); // 리뷰 데이터를 관리하는 상태
-  const { isLoggedin, checkLoginStatus, user, login } = useUser();
-  const navigate = useNavigate();
+  const { isLoggedin, checkLoginStatus, user } = useUser();
   const [bookInfo, setBookInfo] = useState(null);
-
-  // const bookInfo = {
-  //   id: 21,
-  //   title: "책 제목",
-  //   author: "작가",
-  //   publisher: "출판사",
-  //   genre: "소설",
-  //   imageUrl: "https://via.placeholder.com/160x100",
-  //   contentUrl: "https://example.com/book-content",
-  //   summary: "책 요약...",
-  //   price: 15000,
-  //   publishYear: new Date(2022, 0, 1), // 2022년 1월 1일
-  //   entryTime: new Date(), // 현재 시간
-  //   purchaseCount: 0,
-  // };
+  const [isInCart, setIsInCart] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     checkLoginStatus();
   }, [isLoggedin]);
-
   useEffect(() => {
     fetchBookInfo();
   }, []);
+  useEffect(() => {
+    if (user && bookInfo) {
+      checkIfBookInCart();
+    }
+  }, [user, bookInfo]);
   const openReviewModal = () => {
     if (isLoggedin) {
       // 로그인 상태 확인
@@ -75,6 +65,7 @@ const BuyReviewPg = () => {
       console.error("submit review 데이터에러 :", error);
     }
   };
+
   const fetchBookInfo = async () => {
     try {
       const response = await AxiosApi.getBookInfo(21);
@@ -95,22 +86,50 @@ const BuyReviewPg = () => {
     }
   };
 
+  // 장바구니에 해당 책이 있는지 확인하는 함수
+  const checkIfBookInCart = async () => {
+    try {
+      const response = await AxiosApi.getCartItems(user.id);
+      if (response.status === 200) {
+        setIsInCart(response.data.some((item) => item.bookId === bookInfo.id));
+      } else {
+        console.error("장바구니 아이템 목록 가져오기 실패");
+      }
+    } catch (error) {
+      console.error("장바구니 아이템 확인 중 에러 발생", error);
+    }
+  };
+
   // 책 구매 여부 (예: true - 이미 구매한 책, false - 아직 구매하지 않은 책)
   const isPurchased = false; // 또는 true
 
   const addToCart = async () => {
     if (user) {
-      // user 객체가 있을 때만 실행
-      try {
-        const response = await AxiosApi.addToCart(user.id, bookInfo.id);
-        if (response.status === 200) {
-          // ...
-          navigate("/cart");
-        } else {
-          console.error("장바구니 담기기 에러");
+      if (isInCart) {
+        try {
+          const response = await AxiosApi.removeFromCart(user.id, bookInfo.id);
+          if (response.status === 200) {
+            setIsInCart(false);
+            alert("장바구니에서 제거되었습니다.");
+          } else {
+            console.error("장바구니에서 제거 실패");
+          }
+        } catch (error) {
+          console.error("장바구니에서 제거 중 에러 발생", error);
         }
-      } catch (error) {
-        console.error("에러 확인", error);
+      } else {
+        try {
+          const response = await AxiosApi.addToCart(user.id, bookInfo.id);
+          if (response.status === 200) {
+            setIsInCart(true);
+            alert("장바구니에 추가되었습니다.");
+            navigate("/CartPage");
+          } else {
+            console.error("장바구니에 추가 실패");
+          }
+        } catch (error) {
+          console.error("장바구니에 추가 중 에러 발생", error);
+        }
       }
     } else {
       alert("로그인이 필요합니다.");
@@ -130,6 +149,7 @@ const BuyReviewPg = () => {
         <BookPurchase
           info={bookInfo}
           isLoggedIn={isLoggedin}
+          isInCart={isInCart}
           isPurchased={isPurchased}
           onAddToCart={addToCart}
           onPurchase={purchaseBook}
@@ -139,8 +159,8 @@ const BuyReviewPg = () => {
 
       <ReviewModal
         isOpen={isReviewModalOpen}
-        closeModal={closeReviewModal}
         onSubmit={reviewSubmit}
+        closeModal={closeReviewModal}
       />
       <ReviewSection openReviewModal={openReviewModal} bookInfo={bookInfo} />
     </div>

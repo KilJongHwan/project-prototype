@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import AxiosApi from "../api/AxiosApi";
+import { useUser } from "../context/Context";
 
 const CartPageContainer = styled.div`
   padding: 0 30px 70px 30px;
@@ -26,19 +27,28 @@ const CartPageContainer = styled.div`
   }
 `;
 
-const CartPage = ({ memberId }) => {
+const CartPage = ({}) => {
   const [cartItems, setCartItems] = useState([]);
+  const { user, checkLoginStatus } = useUser();
 
   useEffect(() => {
-    fetchCartItems();
+    if (user) {
+      fetchCartItems();
+    }
+  }, [user]);
+  useEffect(() => {
+    checkLoginStatus();
   }, []);
-
+  useEffect(() => {
+    console.log(cartItems); // 상태 업데이트 후의 장바구니 항목 출력
+  }, [cartItems]);
   const fetchCartItems = async () => {
     try {
-      const response = await AxiosApi.getCartItems(memberId);
-      console.log(response); // 응답 출력
+      const response = await AxiosApi.getCartItems(user.id);
+      console.log(response.data); // 응답 출력
       if (response.status === 200) {
         const cartItemsWithBookInfo = await Promise.all(
+          // 병렬구문처리할떄 쓰는 Promise
           response.data.map(async (item) => {
             const bookResponse = await AxiosApi.getBookInfo(item.bookId);
             return {
@@ -48,6 +58,7 @@ const CartPage = ({ memberId }) => {
           })
         );
         setCartItems(cartItemsWithBookInfo);
+        console.log(cartItems); // 상태 업데이트 후의 cartItems 출력
       } else {
         console.error("짱바구니 가져오기 실패");
       }
@@ -58,7 +69,8 @@ const CartPage = ({ memberId }) => {
 
   const removeFromCart = async (bookId) => {
     try {
-      const response = await AxiosApi.removeFromCart(memberId, bookId);
+      const response = await AxiosApi.removeFromCart(user.id, bookId);
+      console.log(response); // 서버로부터의 응답 출력
       if (response.status === 200) {
         fetchCartItems(); // 장바구니 아이템 제거 후 장바구니 아이템 목록을 다시 불러옴
       } else {

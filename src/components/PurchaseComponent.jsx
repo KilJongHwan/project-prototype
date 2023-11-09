@@ -57,6 +57,7 @@ const BookPurchaseBlock = styled.div`
 const BookPurchase = ({
   info,
   isLoggedIn,
+  isInCart,
   isPurchased,
   onAddToCart,
   onPurchase,
@@ -115,7 +116,9 @@ const BookPurchase = ({
               <>
                 {isLoggedIn ? (
                   <>
-                    <button onClick={addToCart}>장바구니에 담기</button>
+                    <button onClick={addToCart}>
+                      {isInCart ? "장바구니에서 제거" : "장바구니에 담기"}
+                    </button>
                     <button onClick={purchaseBook}>구매하기</button>
                   </>
                 ) : (
@@ -130,13 +133,19 @@ const BookPurchase = ({
       <CartModal
         isOpen={cartModalOpen}
         closeModal={closeCartModal}
-        onConfirm={onAddToCart}
-        action="add"
+        onConfirm={() => {
+          onAddToCart();
+          closeCartModal();
+        }}
+        action={isInCart ? "remove" : "add"}
       />
       <PurchaseModal
         isOpen={purchaseModalOpen}
         closeModal={closePurchaseModal}
-        onConfirm={purchaseBook}
+        onConfirm={() => {
+          onPurchase();
+          closePurchaseModal();
+        }}
         action="purchase"
       />
     </BookPurchaseBlock>

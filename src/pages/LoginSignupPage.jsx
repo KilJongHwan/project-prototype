@@ -104,7 +104,7 @@ const Login = () => {
     };
 
     validateForm();
-    checkLoginStatus();
+    checkLoginStatus(); // 로그인 상태 확인
 
     if (
       dataErrors.id === false &&
@@ -122,7 +122,6 @@ const Login = () => {
   useEffect(() => {
     if (isLoggedin) {
       const checkAndRedirect = async () => {
-        await checkLoginStatus(); // 로그인 상태 확인
         console.log(user);
         if (isLoggedin) {
           navigate("/purchase"); // 원하는 페이지로 리다이렉트
@@ -169,12 +168,16 @@ const Login = () => {
       signUpData.email,
       signUpData.phone
     );
-    if (res.data === true) {
-      navigate("/login");
+
+    if (res.data) {
+      alert("회원가입이 완료되었습니다."); // 회원가입 성공 알림
+      window.location.reload(); // 현재 페이지 새로 고침
     } else {
-      setLoginModalOpen(true);
+      alert("이미 중복된 데이터가 존재합니다."); // 중복 오류 알림
+      window.location.reload(); // 현재 페이지 새로 고침
     }
   };
+
   return (
     <Wrapper>
       <Container>
