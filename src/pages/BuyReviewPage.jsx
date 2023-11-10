@@ -13,6 +13,9 @@ const BuyReviewPg = () => {
   const { isLoggedin, checkLoginStatus, user } = useUser();
   const [bookInfo, setBookInfo] = useState(null);
   const [isInCart, setIsInCart] = useState(false);
+  // 책이 구매되었는지 상태 관리
+  const [isPurchased, setIsPurchased] = useState(false);
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -24,6 +27,7 @@ const BuyReviewPg = () => {
   useEffect(() => {
     if (user && bookInfo) {
       checkIfBookInCart();
+      checkIfBookPurchased();
     }
   }, [user, bookInfo]);
   const openReviewModal = () => {
@@ -100,9 +104,6 @@ const BuyReviewPg = () => {
     }
   };
 
-  // 책 구매 여부 (예: true - 이미 구매한 책, false - 아직 구매하지 않은 책)
-  const isPurchased = false; // 또는 true
-
   const addToCart = async () => {
     if (user) {
       if (isInCart) {
@@ -135,9 +136,39 @@ const BuyReviewPg = () => {
       alert("로그인이 필요합니다.");
     }
   };
-
+  // 사용자가 책을 구매했는지 확인하는 기능을 추가합니다.
+  const checkIfBookPurchased = async () => {
+    try {
+      if (user) {
+        const response = await AxiosApi.checkPurchase(user.id, bookInfo.id);
+        if (response.status === 200) {
+          setIsPurchased(response.data);
+        } else {
+          console.error("구매 확인 실패");
+        }
+      }
+    } catch (error) {
+      console.error("구매 확인 중 에러 발생", error);
+    }
+  };
   // 책 구매 함수
-  const purchaseBook = () => {};
+  const purchaseBook = async () => {
+    if (user.cash >= bookInfo.price && user) {
+      try {
+        const response = await AxiosApi.purchaseBook(user.id, bookInfo.id);
+        if (response.status === 200) {
+          alert("구매가 완료되었습니다.");
+          checkIfBookPurchased(); // 구매 후 구매 상태를 다시 확인합니다.
+        } else {
+          console.error("구매 실패");
+        }
+      } catch (error) {
+        console.error("구매 중 에러 발생", error);
+      }
+    } else {
+      alert("잔액이 부족합니다.");
+    }
+  };
 
   // 미리보기 함수
   const viewPreview = () => {};

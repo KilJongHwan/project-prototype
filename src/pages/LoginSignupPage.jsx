@@ -28,6 +28,10 @@ const Login = () => {
   const [inputId, setInputId] = useState("");
   const [inputPw, setInputPwd] = useState("");
   const [isVerified, setIsVerified] = useState(false);
+  const [verifiedEmail, setVerifiedEmail] = useState();
+  const [isIdDup, setIsIdDup] = useState(false);
+  const [isPhoneDup, setIsPhoneDup] = useState(false);
+
   const { isLoggedin, checkLoginStatus, login, user } = useUser();
 
   const navigate = useNavigate();
@@ -52,9 +56,7 @@ const Login = () => {
     id: "",
     password: "",
     name: "",
-    email: "",
     phone: "",
-    cash: "0",
   });
 
   const [dataErrors, setDataErrors] = useState({
@@ -66,50 +68,91 @@ const Login = () => {
 
   const [isSubmitDisabled, setIsSubmitDisabled] = useState(true);
 
-  // 자식 호출 받는 함수
-  const verifyEmail = (value) => {
-    setIsVerified(value);
+  const validateId = () => {
+    const idRegex = /^[a-zA-Z0-9]{8,20}$/;
+    const idError = !idRegex.test(signUpData.id)
+      ? "ID 8~20자의 영문 대소문자와 숫자 조합이어야 합니다."
+      : false;
+
+    setDataErrors((prevErrors) => ({
+      ...prevErrors,
+      id: idError,
+    }));
+  };
+  const validatePassword = () => {
+    const passwordRegex =
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,20}$/;
+
+    const passwordError = !passwordRegex.test(signUpData.password)
+      ? "Password 8~20자의 대소문자, 특수문자, 숫자를 포함해야 합니다."
+      : false;
+
+    setDataErrors((prevErrors) => ({
+      ...prevErrors,
+      password: passwordError,
+    }));
+  };
+  const validatePhone = () => {
+    const phoneRegex = /^\d{2,3}-\d{3,4}-\d{4}$/;
+
+    const phoneError = !phoneRegex.test(signUpData.phone)
+      ? "올바른 전화번호 형식이 아닙니다."
+      : false;
+
+    setDataErrors((prevErrors) => ({
+      ...prevErrors,
+      phone: phoneError,
+    }));
   };
 
+  const checkIdDuplicate = async () => {
+    const res = await AxiosApi.checkDuplicate(signUpData.id);
+    console.log(res.data);
+    if (res.data) {
+      setDataErrors((prevErrors) => ({
+        ...prevErrors,
+        id: "이미 사용중인 ID입니다.",
+      }));
+    } else {
+      setIsIdDup(true);
+    }
+  };
+
+  const checkPhoneDuplicate = async () => {
+    const res = await AxiosApi.checkDuplicate(signUpData.phone);
+    console.log(res.data);
+    if (res.data) {
+      setDataErrors((prevErrors) => ({
+        ...prevErrors,
+        phone: "이미 사용중인 전화번호입니다.",
+      }));
+    } else {
+      setIsPhoneDup(true);
+    }
+  };
+
+  const onBlurDuplicate = async (e) => {
+    const { name } = e.target;
+    if (name === "id") {
+      await checkIdDuplicate();
+    } else if (name === "phone") {
+      await checkPhoneDuplicate();
+    }
+  };
+
+  // 자식 호출 받는 함수
+  // const verifyEmail = (value) => {
+  //   setIsVerified(value);
+  // };
+
   useEffect(() => {
-    const validateForm = () => {
-      const idRegex = /^[a-zA-Z0-9]{8,20}$/;
-      const passwordRegex =
-        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,20}$/;
-      const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$/;
-      const phoneRegex = /^\d{2,3}-\d{3,4}-\d{4}$/;
-
-      const idError = !idRegex.test(signUpData.id)
-        ? "ID 8~20자의 영문 대소문자와 숫자 조합이어야 합니다."
-        : false;
-
-      const passwordError = !passwordRegex.test(signUpData.password)
-        ? "Password 8~20자의 대소문자, 특수문자, 숫자를 포함해야 합니다."
-        : false;
-
-      const emailError = !emailRegex.test(signUpData.email)
-        ? "올바른 이메일 형식이 아닙니다."
-        : false;
-
-      const phoneError = !phoneRegex.test(signUpData.phone)
-        ? "올바른 전화번호 형식이 아닙니다."
-        : false;
-
-      setDataErrors({
-        id: idError,
-        password: passwordError,
-        email: emailError,
-        phone: phoneError,
-      });
-    };
-
-    validateForm();
     checkLoginStatus(); // 로그인 상태 확인
+  }, [signUpData, isVerified]);
 
+  useEffect(() => {
     if (
       dataErrors.id === false &&
       dataErrors.password === false &&
-      dataErrors.email === false &&
       dataErrors.phone === false &&
       isVerified
     ) {
@@ -117,7 +160,7 @@ const Login = () => {
     } else {
       setIsSubmitDisabled(true);
     }
-  }, [signUpData, isVerified]);
+  }, [dataErrors, isIdDup, isPhoneDup, isVerified]);
 
   useEffect(() => {
     if (isLoggedin) {
@@ -162,16 +205,18 @@ const Login = () => {
 
   const signupSubmit = async (e) => {
     e.preventDefault();
-    const res = await AxiosApi.memberSignup(
-      signUpData.id,
-      signUpData.password,
-      signUpData.email,
-      signUpData.phone
-    );
+    if (isIdDup && isPhoneDup) {
+      const res = await AxiosApi.memberSignup(
+        signUpData.id,
+        signUpData.password,
+        verifiedEmail,
+        signUpData.phone
+      );
 
-    if (res.data) {
-      alert("회원가입이 완료되었습니다."); // 회원가입 성공 알림
-      window.location.reload(); // 현재 페이지 새로 고침
+      if (res.data) {
+        alert("회원가입이 완료되었습니다."); // 회원가입 성공 알림
+        window.location.reload(); // 현재 페이지 새로 고침
+      }
     } else {
       alert("이미 중복된 데이터가 존재합니다."); // 중복 오류 알림
       window.location.reload(); // 현재 페이지 새로 고침
@@ -208,9 +253,10 @@ const Login = () => {
                 placeholder="Password"
                 value={inputPw}
                 onChange={(e) => setInputPwd(e.target.value)}
+                autocomplete="current-password"
               />
               <Button className="form_btn" onClick={loginSubmit}>
-                Sign In
+                Login
               </Button>
               <Modal open={loginModalOpen} close={closeModal} header="error">
                 아이디와 패스워드를 확인해주세요.
@@ -224,37 +270,46 @@ const Login = () => {
                 name="id"
                 placeholder="Name"
                 value={signUpData.id}
-                onChange={textChange}
+                onChange={(e) => {
+                  textChange(e);
+                  validateId();
+                }}
+                onBlur={onBlurDuplicate}
+                onFocus={validateId}
               />
               {dataErrors.id && <ErrorText>{dataErrors.id}</ErrorText>}
               <Input
                 type="password"
                 name="password"
                 placeholder="Password"
+                autocomplete="current-password"
                 value={signUpData.password}
-                onChange={textChange}
+                onChange={(e) => {
+                  textChange(e);
+                  validateId();
+                }}
+                onFocus={validatePassword}
               />
               {dataErrors.password && (
                 <ErrorText>{dataErrors.password}</ErrorText>
               )}
               <Input
                 type="text"
-                name="email"
-                placeholder="Email"
-                value={signUpData.email}
-                disabled={isVerified}
-                onChange={textChange}
-              />
-              {dataErrors.email && <ErrorText>{dataErrors.email}</ErrorText>}
-              <EmailVerificationComponent onVerification={verifyEmail} />
-              <Input
-                type="text"
                 name="phone"
                 placeholder="Phone"
                 value={signUpData.phone}
-                onChange={textChange}
+                onChange={(e) => {
+                  textChange(e);
+                  validateId();
+                }}
+                onBlur={onBlurDuplicate}
+                onFocus={validatePhone}
               />
               {dataErrors.phone && <ErrorText>{dataErrors.phone}</ErrorText>}
+              <EmailVerificationComponent
+                onVerification={setIsVerified}
+                onVerifiedEmail={setVerifiedEmail}
+              />
               <Button disabled={isSubmitDisabled} onClick={signupSubmit}>
                 Sign Up
               </Button>
@@ -267,7 +322,7 @@ const Login = () => {
             <p>
               To keep connected with us, please login with your personal info
             </p>
-            <OverlayButton onClick={toggleRightPanel}>Sign In</OverlayButton>
+            <OverlayButton onClick={toggleRightPanel}>Login</OverlayButton>
           </OverlayLeft>
         ) : (
           <OverlayRight $isRightPanelActive={isRightPanelActive}>

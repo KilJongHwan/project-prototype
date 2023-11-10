@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import AxiosApi from "../api/AxiosApi";
 import { Button, Input } from "./LoginComponent";
 
-const EmailVerificationComponent = ({ onVerification }) => {
+const EmailVerificationComponent = ({ onVerification, onVerifiedEmail }) => {
   const [email, setEmail] = useState("");
   const [isEmailSent, setIsEmailSent] = useState(false);
   const [verificationCode, setVerificationCode] = useState("");
@@ -11,15 +11,23 @@ const EmailVerificationComponent = ({ onVerification }) => {
 
   const sendVerificationEmail = async () => {
     try {
-      // 프론트엔드에서 이메일 백엔드로 전송
-      const response = await AxiosApi.sendVerificationEmail(email);
-      console.log("Response" + response.data);
-      if (response.data === true) {
-        setIsEmailSent(true);
-        setVerificationMessage("인증 코드를 전송했습니다.");
+      // 먼저 이메일이 중복인지 확인
+      const duplicationCheck = await AxiosApi.checkDuplicate(null, email, null);
+      if (!duplicationCheck.data) {
+        // 중복된 이메일이 없으면 프론트엔드에서 이메일 백엔드로 전송
+        const response = await AxiosApi.sendVerificationEmail(email);
+        console.log("Response" + response.data);
+        if (response.data === true) {
+          setIsEmailSent(true);
+          setVerificationMessage("인증 코드를 전송했습니다.");
+        } else {
+          setVerificationMessage("인증 코드 전송에 실패했습니다.");
+        }
       } else {
-        setVerificationMessage("인증 코드 전송에 실패했습니다.");
+        setVerificationMessage("이미 사용 중인 이메일입니다.");
+        return;
       }
+      console.log(duplicationCheck.data);
     } catch (e) {
       console.error("이메일 전송 중 오류 발생:", e);
       setVerificationMessage("오류 발생: " + e.message);
@@ -33,7 +41,8 @@ const EmailVerificationComponent = ({ onVerification }) => {
       if (response.data === true) {
         setIsVerified(true);
         setVerificationMessage("이메일이 성공적으로 인증되었습니다!");
-        onVerification(true); //부모 컴포넌트로 신호 보내기
+        // onVerification(true); //부모 컴포넌트로 신호 보내기
+        onVerifiedEmail(email);
       } else {
         setVerificationMessage("이메일 인증에 실패했습니다.");
       }

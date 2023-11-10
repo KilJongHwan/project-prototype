@@ -31,8 +31,13 @@ export const UserProvider = ({ children }) => {
       const token = window.localStorage.getItem("authToken"); // 로컬 스토리지에서 토큰 가져오기
       const response = await AxiosApi.checkLogin(token); // 토큰을 인자로 전달
       if (response.data.message === "User is logged in") {
-        login(response.data.user, token); // 사용자 정보와 토큰을 상태에 저장
-        // console.log(response.data.user);
+        const userInfoResponse = await AxiosApi.getUserInfo(
+          response.data.user.id
+        );
+        if (userInfoResponse.status === 200) {
+          login(userInfoResponse.data, token);
+        }
+        console.log(response.data.user.cash);
         console.log(`로그인 상태`);
       } else {
         logout();

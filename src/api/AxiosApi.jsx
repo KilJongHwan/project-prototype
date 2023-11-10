@@ -10,6 +10,7 @@ const AxiosApi = {
     };
     return await axios.post(DOMAIN + "/users/login", login);
   },
+  // 로그인 체크
   checkLogin: async (token) => {
     const response = await axios.get(DOMAIN + "/users/check-login", {
       headers: {
@@ -18,7 +19,10 @@ const AxiosApi = {
     });
     return response;
   },
-
+  // 로그인한 유저 정보 가져오기
+  getUserInfo: async (userId) => {
+    return await axios.get(`${DOMAIN}/users/${userId}`);
+  },
   // 로그아웃
   memberLogout: async (id, password, token) => {
     const logout = {
@@ -50,6 +54,18 @@ const AxiosApi = {
 
     return await axios.post(`${DOMAIN}/api/send-email`, sendEmail);
   },
+  // 중복 검사
+  checkDuplicate: async (id, email, phone) => {
+    const checkData = {
+      id: id,
+      email: email,
+      tel: phone,
+    };
+    return await axios.post(
+      `${DOMAIN}/users/signup/check-duplicate`,
+      checkData
+    );
+  },
 
   // 이메일 인증 코드 확인
   verifyEmail: async (email, verificationCode) => {
@@ -60,7 +76,7 @@ const AxiosApi = {
     return await axios.post(`${DOMAIN}/api/verify-email`, verification);
   },
 
-  // 리뷰 데이터
+  // 리뷰 데이터 및 가져오기
   reviewData: async (memberId, bookId, content, rating) => {
     const reviewData = {
       memberId: memberId,
@@ -92,6 +108,14 @@ const AxiosApi = {
   // 책 정보 가져오기
   getBookInfo: async (bookId) => {
     return await axios.get(`${DOMAIN}/books/${bookId}`);
+  },
+  // 구매한 책인지 체크
+  checkPurchase: async (memberId, bookId) => {
+    return await axios.get(`${DOMAIN}/books/${memberId}/${bookId}`);
+  },
+  // 책 구매
+  purchaseBook: async (memberId, bookId) => {
+    return await axios.post(`${DOMAIN}/books/purchase/${memberId}/${bookId}`);
   },
 };
 
