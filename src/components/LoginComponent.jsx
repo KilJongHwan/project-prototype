@@ -1,5 +1,6 @@
 import styled, { css, keyframes } from "styled-components";
-
+import KakaoColorImg from "../images/kakao_color.png";
+import KakaoImg from "../images/kakao_white.png";
 const slideInLeft = keyframes`
   from {
     transform: translateX(100%);
@@ -129,6 +130,13 @@ const SocialLink = styled.div`
   border-radius: 50%;
   box-shadow: -5px -5px 10px #fff, 5px 5px 8px #babebc;
   cursor: pointer;
+  background-image: url(${KakaoImg});
+  background-size: cover;
+  transition: background-image 0.5s ease-in-out;
+
+  &:hover {
+    background-image: url(${KakaoColorImg});
+  }
 
   &:active {
     box-shadow: inset 1px 1px 2px #babebc, inset -1px -1px 2px #fff;

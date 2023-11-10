@@ -1,6 +1,4 @@
 import React, { useState, useEffect } from "react";
-import KakaoColorImg from "../images/kakao_color.png";
-import KakaoImg from "../images/kakao_white.png";
 import {
   Wrapper,
   Container,
@@ -22,7 +20,6 @@ import { useUser } from "../context/Context";
 import sha256 from "crypto-js/sha256";
 
 const Login = () => {
-  const [socialImage, setSocialImage] = useState(KakaoColorImg); // 초기 이미지 설정
   const [loginModalOpen, setLoginModalOpen] = useState(false);
   const [isRightPanelActive, setIsRightPanelActive] = useState(false);
   const [inputId, setInputId] = useState("");
@@ -39,15 +36,6 @@ const Login = () => {
   const closeModal = () => {
     setLoginModalOpen(false);
   };
-
-  const socialHover = () => {
-    setSocialImage(KakaoColorImg);
-  };
-
-  const socialLeave = () => {
-    setSocialImage(KakaoImg);
-  };
-
   const toggleRightPanel = () => {
     setIsRightPanelActive(!isRightPanelActive);
   };
@@ -140,11 +128,6 @@ const Login = () => {
     }
   };
 
-  // 자식 호출 받는 함수
-  // const verifyEmail = (value) => {
-  //   setIsVerified(value);
-  // };
-
   useEffect(() => {
     checkLoginStatus(); // 로그인 상태 확인
   }, [signUpData, isVerified]);
@@ -214,7 +197,7 @@ const Login = () => {
       );
 
       if (res.data) {
-        alert("회원가입이 완료되었습니다."); // 회원가입 성공 알림
+        await setLoginModalOpen(true);
         window.location.reload(); // 현재 페이지 새로 고침
       }
     } else {
@@ -229,17 +212,9 @@ const Login = () => {
         <Form $isRightPanelActive={isRightPanelActive}>
           {!isRightPanelActive ? (
             <>
-              <h1>Sign In</h1>
+              <h1>Login</h1>
               <SocialLinks>
-                <SocialLink>
-                  <img
-                    src={socialImage}
-                    alt="cacao"
-                    style={{ width: "100%", height: "100%" }}
-                    onMouseEnter={socialHover}
-                    onMouseLeave={socialLeave}
-                  />
-                </SocialLink>
+                <SocialLink></SocialLink>
               </SocialLinks>
               <span>or use your account</span>
               <Input
@@ -253,7 +228,7 @@ const Login = () => {
                 placeholder="Password"
                 value={inputPw}
                 onChange={(e) => setInputPwd(e.target.value)}
-                autocomplete="current-password"
+                autoComplete="current-password"
               />
               <Button className="form_btn" onClick={loginSubmit}>
                 Login
@@ -274,7 +249,10 @@ const Login = () => {
                   textChange(e);
                   validateId();
                 }}
-                onBlur={onBlurDuplicate}
+                onBlur={(e) => {
+                  validateId();
+                  onBlurDuplicate(e);
+                }}
                 onFocus={validateId}
               />
               {dataErrors.id && <ErrorText>{dataErrors.id}</ErrorText>}
@@ -282,12 +260,13 @@ const Login = () => {
                 type="password"
                 name="password"
                 placeholder="Password"
-                autocomplete="current-password"
+                autoComplete="current-password"
                 value={signUpData.password}
                 onChange={(e) => {
                   textChange(e);
-                  validateId();
+                  validatePassword();
                 }}
+                onBlur={validatePassword}
                 onFocus={validatePassword}
               />
               {dataErrors.password && (
@@ -300,9 +279,12 @@ const Login = () => {
                 value={signUpData.phone}
                 onChange={(e) => {
                   textChange(e);
-                  validateId();
+                  validatePhone();
                 }}
-                onBlur={onBlurDuplicate}
+                onBlur={(e) => {
+                  validatePhone();
+                  onBlurDuplicate(e);
+                }}
                 onFocus={validatePhone}
               />
               {dataErrors.phone && <ErrorText>{dataErrors.phone}</ErrorText>}
@@ -313,21 +295,31 @@ const Login = () => {
               <Button disabled={isSubmitDisabled} onClick={signupSubmit}>
                 Sign Up
               </Button>
+              <Modal open={loginModalOpen} close={closeModal} header="error">
+                회원가입 완료되었습니다!
+              </Modal>
             </>
           )}
         </Form>
         {isRightPanelActive ? (
           <OverlayLeft $isRightPanelActive={isRightPanelActive}>
-            <h1>Welcome Back</h1>
+            <h1>회원가입 페이지</h1>
             <p>
-              To keep connected with us, please login with your personal info
+              먼저 그대 자신에게 진실하라. 그리고 자기자신의 성장과 자신에게
+              필요한 것들을 하고 난 연후에 비로소 다른 사람들의 성장을 위해
+              노력하라. 자신의 본분을 잊은 상태에서 하는 봉사는 진정한 것이
+              아니니라.
             </p>
             <OverlayButton onClick={toggleRightPanel}>Login</OverlayButton>
           </OverlayLeft>
         ) : (
           <OverlayRight $isRightPanelActive={isRightPanelActive}>
-            <h1>Hello, Friend</h1>
-            <p>Enter your personal details and start a journey with us</p>
+            <h1>로그인 페이지</h1>
+            <p>
+              결정을 내릴 때는 그대가 원하는 모습과 어떻게 대응할 것인가에 대해
+              생각하고 “인지”한 상태에서 하라. 그대의 행위로 인한 모든 결과는
+              바로 그대의 책임이니라.
+            </p>
             <OverlayButton onClick={toggleRightPanel}>Sign Up</OverlayButton>
           </OverlayRight>
         )}
