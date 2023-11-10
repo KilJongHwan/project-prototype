@@ -101,6 +101,8 @@ const ReviewSection = ({ openReviewModal, bookInfo }) => {
       const response = await AxiosApi.getReviews(bookInfo.id);
       if (response.status === 200) {
         setReviews(response.data);
+        fetchReviews();
+        fetchReviewStats();
       } else {
         console.error("리뷰 가져오기 실패");
       }
@@ -128,14 +130,12 @@ const ReviewSection = ({ openReviewModal, bookInfo }) => {
       console.error("Failed to fetch review stats:", error);
     }
   };
-  // useEffect 2개 쓴이유 동시 데이터베이스 접속하면 에러나서 그랬습니다.
+
   useEffect(() => {
     checkLoginStatus();
-  }, [isLoggedin]);
-  useEffect(() => {
     fetchReviews();
     fetchReviewStats();
-  }, [bookInfo]);
+  }, [isLoggedin]);
 
   return (
     <ReviewSectionContainer>

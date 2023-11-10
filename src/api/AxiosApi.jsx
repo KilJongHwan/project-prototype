@@ -117,6 +117,13 @@ const AxiosApi = {
   purchaseBook: async (memberId, bookId) => {
     return await axios.post(`${DOMAIN}/books/purchase/${memberId}/${bookId}`);
   },
+  // 여러 책 구매
+  purchaseBooks: async (memberId, bookIds) => {
+    return await axios.post(
+      `${DOMAIN}/books/purchase/multiple/${memberId}`,
+      bookIds
+    );
+  },
 };
 
 export default AxiosApi;

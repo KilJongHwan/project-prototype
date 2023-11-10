@@ -69,7 +69,7 @@ const BuyReviewPg = () => {
       console.error("submit review 데이터에러 :", error);
     }
   };
-
+  // 책 정보 받아오는 함수
   const fetchBookInfo = async () => {
     try {
       const response = await AxiosApi.getBookInfo(21);
