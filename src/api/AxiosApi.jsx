@@ -124,6 +124,10 @@ const AxiosApi = {
       bookIds
     );
   },
+  // 카카오 로그인
+  kakaoLogin: async (data) => {
+    return await axios.post(DOMAIN + "/users/kakao-login", data);
+  },
 };
 
 export default AxiosApi;

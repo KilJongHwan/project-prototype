@@ -18,6 +18,7 @@ import Modal from "../util/LoginModal";
 import EmailVerificationComponent from "../components/MailComponent";
 import { useUser } from "../context/Context";
 import sha256 from "crypto-js/sha256";
+import KakaoLogin from "react-kakao-login";
 
 const Login = () => {
   const [loginModalOpen, setLoginModalOpen] = useState(false);
@@ -162,6 +163,33 @@ const Login = () => {
     setSignUpData({ ...signUpData, [name]: value });
   };
 
+  // 카카오 로그인에 성공하면 실행할 함수
+  const onKakaoLoginSuccess = async (data) => {
+    console.log(data);
+
+    // 카카오 사용자 정보와 토큰 등을 백엔드 서버에 전달
+    const res = await AxiosApi.kakaoLogin({
+      access_token: data.response.access_token,
+    });
+    console.log(res);
+    // 백엔드 서버는 카카오 사용자 정보를 받아 사용자를 인증하고,
+    // 필요하다면 사용자 정보를 데이터베이스에 저장한 후 자체 토큰을 생성하여 응답해야 합니다.
+
+    // 서버로부터 받은 토큰을 로컬 스토리지에 저장
+    const token = res.data;
+    window.localStorage.setItem("authToken", token);
+
+    // 로그인 상태를 업데이트
+    login(res, token);
+
+    // 로그인에 성공하면 원하는 페이지로 리다이렉트
+    // navigate("/purchase");
+  };
+
+  // 카카오 로그인에 실패하면 실행할 함수
+  const onKakaoLoginFailure = (error) => {
+    console.error(error);
+  };
   const loginSubmit = async (e) => {
     e.preventDefault();
     const hashedPassword = sha256(inputPw).toString();
@@ -197,7 +225,7 @@ const Login = () => {
       );
 
       if (res.data) {
-        await setLoginModalOpen(true);
+        setLoginModalOpen(true);
         window.location.reload(); // 현재 페이지 새로 고침
       }
     } else {
@@ -214,7 +242,31 @@ const Login = () => {
             <>
               <h1>Login</h1>
               <SocialLinks>
-                <SocialLink></SocialLink>
+                <SocialLink>
+                  <KakaoLogin
+                    token="a7940b21b9348984d28207e9a32452d9"
+                    onSuccess={onKakaoLoginSuccess}
+                    onFailure={onKakaoLoginFailure}
+                    getProfile={true}
+                    style={{ backgroundImage: "none", border: "none" }}
+                    render={({ onClick }) => {
+                      return (
+                        <button
+                          onClick={(e) => {
+                            e.preventDefault();
+                            onClick();
+                          }}
+                          style={{
+                            background: "none",
+                            border: "none",
+                            width: "100%",
+                            height: "100%",
+                          }}
+                        ></button>
+                      );
+                    }}
+                  />
+                </SocialLink>
               </SocialLinks>
               <span>or use your account</span>
               <Input
