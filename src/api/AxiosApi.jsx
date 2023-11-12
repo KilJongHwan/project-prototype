@@ -128,6 +128,15 @@ const AxiosApi = {
   kakaoLogin: async (data) => {
     return await axios.post(DOMAIN + "/users/kakao-login", data);
   },
+  // 카카오 로그인 상태 확인
+  checkKakaoLogin: async (token) => {
+    const response = await axios.get(DOMAIN + "/users/check-kakao-login", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response;
+  },
 };
 
 export default AxiosApi;

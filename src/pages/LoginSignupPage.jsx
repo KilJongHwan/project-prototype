@@ -172,8 +172,6 @@ const Login = () => {
       access_token: data.response.access_token,
     });
     console.log(res);
-    // 백엔드 서버는 카카오 사용자 정보를 받아 사용자를 인증하고,
-    // 필요하다면 사용자 정보를 데이터베이스에 저장한 후 자체 토큰을 생성하여 응답해야 합니다.
 
     // 서버로부터 받은 토큰을 로컬 스토리지에 저장
     const token = res.data;
@@ -181,9 +179,6 @@ const Login = () => {
 
     // 로그인 상태를 업데이트
     login(res, token);
-
-    // 로그인에 성공하면 원하는 페이지로 리다이렉트
-    // navigate("/purchase");
   };
 
   // 카카오 로그인에 실패하면 실행할 함수
