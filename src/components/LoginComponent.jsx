@@ -35,7 +35,7 @@ const slideLayLeft = keyframes`
 
 const slideLayRight = keyframes`
   from {
-    transform: translateX(-100%);
+    transform: translateX(0);
     opacity: 0;
   }
   to {
@@ -198,10 +198,19 @@ const OverlayRight = styled(Overlay)`
       z-index: 2;
     `}
 `;
+const fadeIn = keyframes`
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+`;
 const ErrorText = styled.div`
   color: red;
   font-size: 14px;
   margin-top: 4px;
+  animation: ${fadeIn} 1s;
 `;
 
 export {
