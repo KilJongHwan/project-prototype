@@ -151,7 +151,7 @@ const Login = () => {
       const checkAndRedirect = async () => {
         console.log(user);
         if (isLoggedin) {
-          navigate("/purchase"); // 원하는 페이지로 리다이렉트
+          navigate("/PurchasePage"); // 원하는 페이지로 리다이렉트
         }
       };
       checkAndRedirect();
@@ -203,7 +203,7 @@ const Login = () => {
         login(res, token);
       }
 
-      navigate("/purchase");
+      navigate("/PurchasePage");
     } else {
       setLoginModalOpen(true);
     }

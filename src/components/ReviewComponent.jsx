@@ -135,7 +135,7 @@ const ReviewSection = ({ openReviewModal, bookInfo }) => {
     checkLoginStatus();
     fetchReviews();
     fetchReviewStats();
-  }, [isLoggedin]);
+  }, []);
 
   return (
     <ReviewSectionContainer>
