@@ -23,7 +23,7 @@ const fadeOut = keyframes`
 `;
 const BackgroundImage = styled.div`
   z-index: 0;
-  flex: 1.5;
+  flex: 0.6;
   position: relative;
   width: 100%;
   height: 100vh;
@@ -179,6 +179,7 @@ const OverlayButton = styled.button`
   font-size: 12px;
   font-weight: bold;
   padding: 15px 45px;
+  margin-top: 30px;
   cursor: pointer;
   transition: transform 80ms ease-in;
   box-shadow: -5px -5px 10px #ff6b3f, 5px 5px 8px #bf4b2b;

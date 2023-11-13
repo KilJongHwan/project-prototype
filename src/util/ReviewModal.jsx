@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import { FaStar } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
 const ModalWrapper = styled.div`
   position: fixed;
@@ -45,6 +46,7 @@ const ReviewModal = ({ isOpen, closeModal, onSubmit }) => {
   const [reviewText, setReviewText] = useState("");
   const [rating, setRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
+  const navigate = useNavigate();
 
   const reviewTextChange = (e) => {
     setReviewText(e.target.value);

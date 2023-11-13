@@ -363,7 +363,6 @@ const Login = () => {
             {isRightPanelActive ? "Login" : "Sign Up"}
           </OverlayButton>
         </SignupForm>
-
         <BackgroundImage />
       </Container>
     </Wrapper>
