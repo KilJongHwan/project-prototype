@@ -3,14 +3,16 @@ import {
   Wrapper,
   Container,
   Form,
+  SignupForm,
+  LoginForm,
   Input,
   Button,
   SocialLinks,
   SocialLink,
   OverlayButton,
-  OverlayLeft,
-  OverlayRight,
   ErrorText,
+  Logo,
+  BackgroundImage,
 } from "../components/LoginComponent";
 import AxiosApi from "../api/AxiosApi";
 import { useNavigate } from "react-router-dom";
@@ -40,7 +42,6 @@ const Login = () => {
   const toggleRightPanel = () => {
     setIsRightPanelActive(!isRightPanelActive);
   };
-
   const [signUpData, setSignUpData] = useState({
     id: "",
     password: "",
@@ -151,7 +152,7 @@ const Login = () => {
       const checkAndRedirect = async () => {
         console.log(user);
         if (isLoggedin) {
-          navigate("/PurchasePage"); // 원하는 페이지로 리다이렉트
+          navigate("/PurchasePa"); // 원하는 페이지로 리다이렉트
         }
       };
       checkAndRedirect();
@@ -232,144 +233,138 @@ const Login = () => {
   return (
     <Wrapper>
       <Container>
-        <Form $isRightPanelActive={isRightPanelActive}>
-          {!isRightPanelActive ? (
-            <>
-              <h1>Login</h1>
-              <SocialLinks>
-                <SocialLink>
-                  <KakaoLogin
-                    token="a7940b21b9348984d28207e9a32452d9"
-                    onSuccess={onKakaoLoginSuccess}
-                    onFailure={onKakaoLoginFailure}
-                    getProfile={true}
-                    style={{ backgroundImage: "none", border: "none" }}
-                    render={({ onClick }) => {
-                      return (
-                        <button
-                          onClick={(e) => {
-                            e.preventDefault();
-                            onClick();
-                          }}
-                          style={{
-                            background: "none",
-                            border: "none",
-                            width: "100%",
-                            height: "100%",
-                          }}
-                        ></button>
-                      );
-                    }}
-                  />
-                </SocialLink>
-              </SocialLinks>
-              <span>or use your account</span>
-              <Input
-                type="text"
-                placeholder="ID"
-                value={inputId}
-                onChange={(e) => setInputId(e.target.value)}
-              />
-              <Input
-                type="password"
-                placeholder="Password"
-                value={inputPw}
-                onChange={(e) => setInputPwd(e.target.value)}
-                autoComplete="current-password"
-              />
-              <Button className="form_btn" onClick={loginSubmit}>
-                Login
-              </Button>
-              <Modal open={loginModalOpen} close={closeModal} header="error">
-                아이디와 패스워드를 확인해주세요.
-              </Modal>
-            </>
-          ) : (
-            <>
-              <h1>Create Account</h1>
-              <Input
-                type="text"
-                name="id"
-                placeholder="Name"
-                value={signUpData.id}
-                onChange={(e) => {
-                  textChange(e);
-                  validateId();
-                }}
-                onBlur={(e) => {
-                  validateId();
-                  onBlurDuplicate(e);
-                }}
-                onFocus={validateId}
-              />
-              {dataErrors.id && <ErrorText>{dataErrors.id}</ErrorText>}
-              <Input
-                type="password"
-                name="password"
-                placeholder="Password"
-                autoComplete="current-password"
-                value={signUpData.password}
-                onChange={(e) => {
-                  textChange(e);
-                  validatePassword();
-                }}
-                onBlur={validatePassword}
-                onFocus={validatePassword}
-              />
-              {dataErrors.password && (
-                <ErrorText>{dataErrors.password}</ErrorText>
-              )}
-              <Input
-                type="text"
-                name="phone"
-                placeholder="Phone"
-                value={signUpData.phone}
-                onChange={(e) => {
-                  textChange(e);
-                  validatePhone();
-                }}
-                onBlur={(e) => {
-                  validatePhone();
-                  onBlurDuplicate(e);
-                }}
-                onFocus={validatePhone}
-              />
-              {dataErrors.phone && <ErrorText>{dataErrors.phone}</ErrorText>}
-              <EmailVerificationComponent
-                onVerification={setIsVerified}
-                onVerifiedEmail={setVerifiedEmail}
-              />
-              <Button disabled={isSubmitDisabled} onClick={signupSubmit}>
-                Sign Up
-              </Button>
-              <Modal open={loginModalOpen} close={closeModal} header="error">
-                회원가입 완료되었습니다!
-              </Modal>
-            </>
-          )}
-        </Form>
-        {isRightPanelActive ? (
-          <OverlayLeft $isRightPanelActive={isRightPanelActive}>
-            <h1>회원가입 페이지</h1>
-            <p>
-              먼저 그대 자신에게 진실하라. 그리고 자기자신의 성장과 자신에게
-              필요한 것들을 하고 난 연후에 비로소 다른 사람들의 성장을 위해
-              노력하라. 자신의 본분을 잊은 상태에서 하는 봉사는 진정한 것이
-              아니니라.
-            </p>
-            <OverlayButton onClick={toggleRightPanel}>Login</OverlayButton>
-          </OverlayLeft>
-        ) : (
-          <OverlayRight $isRightPanelActive={isRightPanelActive}>
-            <h1>로그인 페이지</h1>
-            <p>
-              결정을 내릴 때는 그대가 원하는 모습과 어떻게 대응할 것인가에 대해
-              생각하고 “인지”한 상태에서 하라. 그대의 행위로 인한 모든 결과는
-              바로 그대의 책임이니라.
-            </p>
-            <OverlayButton onClick={toggleRightPanel}>Sign Up</OverlayButton>
-          </OverlayRight>
-        )}
+        <LoginForm $isRightPanelActive={isRightPanelActive}>
+          <Logo></Logo>
+          <>
+            <h1>Login</h1>
+            <SocialLinks>
+              <SocialLink>
+                <KakaoLogin
+                  token="a7940b21b9348984d28207e9a32452d9"
+                  onSuccess={onKakaoLoginSuccess}
+                  onFailure={onKakaoLoginFailure}
+                  getProfile={true}
+                  style={{ backgroundImage: "none", border: "none" }}
+                  render={({ onClick }) => {
+                    return (
+                      <button
+                        onClick={(e) => {
+                          e.preventDefault();
+                          onClick();
+                        }}
+                        style={{
+                          background: "none",
+                          border: "none",
+                          width: "100%",
+                          height: "100%",
+                        }}
+                      ></button>
+                    );
+                  }}
+                />
+              </SocialLink>
+            </SocialLinks>
+            <span>or use your account</span>
+            <Input
+              type="text"
+              placeholder="ID"
+              value={inputId}
+              onChange={(e) => setInputId(e.target.value)}
+            />
+            <Input
+              type="password"
+              placeholder="Password"
+              value={inputPw}
+              onChange={(e) => setInputPwd(e.target.value)}
+              autoComplete="current-password"
+            />
+            <Button className="form_btn" onClick={loginSubmit}>
+              Login
+            </Button>
+            <Modal open={loginModalOpen} close={closeModal} header="error">
+              아이디와 패스워드를 확인해주세요.
+            </Modal>
+            <OverlayButton
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                toggleRightPanel();
+              }}
+            >
+              {isRightPanelActive ? "Login" : "Sign Up"}
+            </OverlayButton>
+          </>
+        </LoginForm>
+        <SignupForm $isRightPanelActive={isRightPanelActive}>
+          <h1>Create Account</h1>
+          <Input
+            type="text"
+            name="id"
+            placeholder="Name"
+            value={signUpData.id}
+            onChange={(e) => {
+              textChange(e);
+              validateId();
+            }}
+            onBlur={(e) => {
+              validateId();
+              onBlurDuplicate(e);
+            }}
+            onFocus={validateId}
+          />
+          {dataErrors.id && <ErrorText>{dataErrors.id}</ErrorText>}
+          <Input
+            type="password"
+            name="password"
+            placeholder="Password"
+            autoComplete="current-password"
+            value={signUpData.password}
+            onChange={(e) => {
+              textChange(e);
+              validatePassword();
+            }}
+            onBlur={validatePassword}
+            onFocus={validatePassword}
+          />
+          {dataErrors.password && <ErrorText>{dataErrors.password}</ErrorText>}
+          <Input
+            type="text"
+            name="phone"
+            placeholder="Phone"
+            value={signUpData.phone}
+            onChange={(e) => {
+              textChange(e);
+              validatePhone();
+            }}
+            onBlur={(e) => {
+              validatePhone();
+              onBlurDuplicate(e);
+            }}
+            onFocus={validatePhone}
+          />
+          {dataErrors.phone && <ErrorText>{dataErrors.phone}</ErrorText>}
+          <EmailVerificationComponent
+            onVerification={setIsVerified}
+            onVerifiedEmail={setVerifiedEmail}
+          />
+          <Button disabled={isSubmitDisabled} onClick={signupSubmit}>
+            Sign Up
+          </Button>
+          <Modal open={loginModalOpen} close={closeModal} header="error">
+            회원가입 완료되었습니다!
+          </Modal>
+          <OverlayButton
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              toggleRightPanel();
+            }}
+          >
+            {isRightPanelActive ? "Login" : "Sign Up"}
+          </OverlayButton>
+        </SignupForm>
+
+        <BackgroundImage />
       </Container>
     </Wrapper>
   );

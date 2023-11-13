@@ -1,47 +1,37 @@
 import styled, { css, keyframes } from "styled-components";
 import KakaoColorImg from "../images/kakao_color.png";
 import KakaoImg from "../images/kakao_white.png";
-const slideInLeft = keyframes`
+import backgroundImage from "../images/bookInTheForest.jpg";
+import logo from "../images/logoPhrase.png";
+
+const fadeIn = keyframes`
   from {
-    transform: translateX(100%);
     opacity: 0;
   }
   to {
-    transform: translateX(0);
     opacity: 1;
   }
 `;
 
-const slideInRight = keyframes`
+const fadeOut = keyframes`
   from {
-    transform: translateX(0);
-    opacity: 0;
+    opacity: 1;
   }
   to {
-    transform: translateX(100%);
-    opacity: 1;
+    opacity: 0;
   }
 `;
-const slideLayLeft = keyframes`
-  from {
-    transform: translateX(100%);
-    opacity: 0;
-  }
-  to {
-    transform: translateX(-100%);
-    opacity: 1;
-  }
-`;
-
-const slideLayRight = keyframes`
-  from {
-    transform: translateX(0);
-    opacity: 0;
-  }
-  to {
-    transform: translateX(100%);
-    opacity: 1;
-  }
+const BackgroundImage = styled.div`
+  z-index: 0;
+  flex: 1.5;
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  background-image: url(${backgroundImage});
+  background-position: left;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: left;
 `;
 
 const Wrapper = styled.div`
@@ -49,43 +39,80 @@ const Wrapper = styled.div`
   height: 100vh;
   display: flex;
   justify-content: center;
+  flex-direction: row; // 가로 배치
   align-items: center;
   background: #ebecf0;
   overflow: hidden;
 `;
-
 const Container = styled.div`
-  display: flex;
-  border-radius: 10px;
-  box-shadow: -5px -5px 10px #fff, 5px 5px 10px #babebc;
-  width: 768px;
-  min-height: 480px;
-  overflow: hidden;
   position: relative;
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  height: 100vh;
+  background-position: left;
+  background-repeat: no-repeat;
+  background-size: 60%;
 `;
-
 const Form = styled.form`
-  flex: 1;
-  background: #ebecf0;
+  z-index: 1;
+  flex: 0.6; // 백그라운드 이미지와 폼의 비율을 조절
   display: flex;
   flex-direction: column;
   padding: 0 50px;
   justify-content: center;
   align-items: center;
-
-  ${(props) =>
-    props.$isRightPanelActive &&
-    css`
-      animation: ${slideInRight} 0.5s forwards;
-    `}
-
-  ${(props) =>
-    !props.$isRightPanelActive &&
-    css`
-      animation: ${slideInLeft} 0.5s forwards;
-    `}
+  width: 100%; // 폼의 너비를 100%로 설정
+  max-width: 328px; // 폼의 최대 너비를 500px로 제한
+  position: absolute; // 폼이 서로 겹치게 하기 위해 position을 absolute로 설정
+  opacity: ${(props) => (props.$isRightPanelActive ? 0 : 1)};
 `;
 
+const LoginForm = styled(Form)`
+  z-index: 2;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 0 50px;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  max-width: 328px;
+  position: absolute;
+  top: 50%;
+  left: 80%;
+  transform: translate(-50%, -50%);
+  animation: ${(props) =>
+    props.$isRightPanelActive ? css`2s ${fadeOut}` : css`2s ${fadeIn}`};
+  opacity: ${(props) => (props.$isRightPanelActive ? 0 : 1)};
+  z-index: ${(props) => (props.$isRightPanelActive ? -1 : 1)};
+`;
+
+const SignupForm = styled(Form)`
+  z-index: 2;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 0 50px;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  max-width: 328px;
+  position: absolute;
+  top: 50%;
+  left: 80%;
+  transform: translate(-50%, -50%);
+  animation: ${(props) =>
+    props.$isRightPanelActive ? css`2s ${fadeIn}` : css`2s ${fadeOut}`};
+  opacity: ${(props) => (props.$isRightPanelActive ? 1 : 0)};
+  z-index: ${(props) => (props.$isRightPanelActive ? 1 : -1)};
+`;
+const Logo = styled.div`
+  width: 100px; // 원하는 로고의 크기로 조정
+  height: 100px;
+  background: url(${logo}) no-repeat center/cover;
+  margin-bottom: 20px; // 로고와 폼 사이의 간격 조정
+`;
 const Input = styled.input`
   background: #eee;
   padding: 16px;
@@ -172,40 +199,6 @@ const Overlay = styled.div`
   transition: all 0.5s;
 `;
 
-const OverlayLeft = styled(Overlay)`
-  opacity: 0;
-  transform: translateX(-100%);
-  z-index: 1;
-  ${(props) =>
-    props.$isRightPanelActive &&
-    css`
-      animation: ${slideLayLeft} 0.5s forwards;
-      transform: translateX(0);
-      opacity: 1;
-      z-index: 2;
-    `}
-`;
-
-const OverlayRight = styled(Overlay)`
-  transform: translateX(0);
-  z-index: 1;
-  ${(props) =>
-    props.$isRightPanelActive &&
-    css`
-      animation: ${slideLayRight} 0.5s forwards;
-      transform: translateX(100%);
-      opacity: 1;
-      z-index: 2;
-    `}
-`;
-const fadeIn = keyframes`
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-`;
 const ErrorText = styled.div`
   color: red;
   font-size: 14px;
@@ -214,20 +207,18 @@ const ErrorText = styled.div`
 `;
 
 export {
-  slideInLeft,
-  slideInRight,
-  slideLayLeft,
-  slideLayRight,
   Wrapper,
   Container,
   Form,
+  SignupForm,
+  LoginForm,
   Input,
   Button,
   SocialLinks,
   SocialLink,
   OverlayButton,
   Overlay,
-  OverlayLeft,
-  OverlayRight,
   ErrorText,
+  Logo,
+  BackgroundImage,
 };
