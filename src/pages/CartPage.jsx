@@ -69,17 +69,19 @@ const CartPage = ({}) => {
     } else {
       setCheckedItems([...checkedItems, bookId]);
     }
+    console.log(bookId);
   };
   const isChecked = (bookId) => checkedItems.includes(bookId);
   const purchaseSelected = async () => {
     try {
       const response = await AxiosApi.purchaseBooks(user.id, checkedItems);
+      console.log(checkedItems);
       console.log(response); // 서버로부터의 응답 출력
-      if (response.status === 200) {
+      if (response.status === 200 && response.data) {
         fetchCartItems(); // 책을 구매한 후 장바구니 아이템 목록을 다시 불러옴
         setCheckedItems([]); // 체크된 아이템 초기화
       } else {
-        console.error("책 구매 실패");
+        alert("책을 구매할수 없습니다.");
       }
     } catch (error) {
       console.error("에러 확인", error);

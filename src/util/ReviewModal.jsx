@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import { FaStar } from "react-icons/fa";
-import { useNavigate } from "react-router-dom";
 
 const ModalWrapper = styled.div`
   position: fixed;
@@ -20,6 +19,10 @@ const ModalContent = styled.div`
   padding: 30px;
   border-radius: 10px;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+  width: 50%;
+  max-width: 500px;
+  text-align: center;
+  margin: 0 20px;
 `;
 
 const CloseButton = styled.button`
@@ -30,23 +33,88 @@ const CloseButton = styled.button`
   border: none;
   font-size: 28px;
   cursor: pointer;
+  color: #333;
 `;
 
 const StarRating = styled.div`
   display: flex;
   gap: 10px;
+  justify-content: center;
+  gap: 15px;
 `;
 
 const Star = styled(FaStar)`
-  font-size: 28px;
+  font-size: 32px;
   cursor: pointer;
+`;
+const TextArea = styled.textarea`
+  width: 100%;
+  height: 200px;
+  padding: 10px;
+  margin-top: 20px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  font-size: 16px;
+  resize: none;
+`;
+const SubmitButton = styled.button`
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+  outline: none;
+  border: 0;
+  vertical-align: middle;
+  text-decoration: none;
+  font-size: inherit;
+  font-family: inherit;
+  font-weight: 600;
+  color: #382b22;
+  text-transform: uppercase;
+  padding: 1.25em 2em;
+  background: #fff0f0;
+  border: 2px solid #b18597;
+  border-radius: 0.75em;
+  transform-style: preserve-3d;
+  transition: transform 150ms cubic-bezier(0, 0, 0.58, 1),
+    background 150ms cubic-bezier(0, 0, 0.58, 1);
+  &:before {
+    position: absolute;
+    content: "";
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: #f9c4d2;
+    border-radius: inherit;
+    box-shadow: 0 0 0 2px #b18597, 0 0.625em 0 0 #ffe3e2;
+    transform: translate3d(0, 0.75em, -1em);
+    transition: transform 150ms cubic-bezier(0, 0, 0.58, 1),
+      box-shadow 150ms cubic-bezier(0, 0, 0.58, 1);
+  }
+  &:hover {
+    background: #ffe9e9;
+    transform: translate(0, 0.25em);
+    &:before {
+      box-shadow: 0 0 0 2px #b18597, 0 0.5em 0 0 #ffe3e2;
+      transform: translate3d(0, 0.5em, -1em);
+    }
+  }
+  &:active {
+    background: #ffe9e9;
+    transform: translate(0em, 0.75em);
+    &:before {
+      box-shadow: 0 0 0 2px #b18597, 0 0 #ffe3e2;
+      transform: translate3d(0, 0, -1em);
+    }
+  }
 `;
 
 const ReviewModal = ({ isOpen, closeModal, onSubmit }) => {
   const [reviewText, setReviewText] = useState("");
   const [rating, setRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
-  const navigate = useNavigate();
 
   const reviewTextChange = (e) => {
     setReviewText(e.target.value);
@@ -71,6 +139,7 @@ const ReviewModal = ({ isOpen, closeModal, onSubmit }) => {
     }
     onSubmit({ rating, reviewText });
     closeModal();
+    window.location.reload();
   };
   const modalClick = (e) => {
     if (e.target === e.currentTarget) {
@@ -86,7 +155,6 @@ const ReviewModal = ({ isOpen, closeModal, onSubmit }) => {
             <CloseButton onClick={closeModal}>&times;</CloseButton>
             <h2>리뷰 작성</h2>
             <div>
-              <label>평점:</label>
               <StarRating>
                 {[1, 2, 3, 4, 5].map((value) => (
                   <Star
@@ -102,15 +170,15 @@ const ReviewModal = ({ isOpen, closeModal, onSubmit }) => {
               </StarRating>
             </div>
             <div>
-              <label htmlFor="reviewText">리뷰 내용:</label>
-              <textarea
+              <label htmlFor="reviewText"></label>
+              <TextArea
                 id="reviewText"
                 value={reviewText}
                 onChange={reviewTextChange}
                 required
               />
             </div>
-            <button onClick={submitReview}>리뷰 제출</button>
+            <SubmitButton onClick={submitReview}>리뷰 제출</SubmitButton>
           </ModalContent>
         </ModalWrapper>
       )}

@@ -152,7 +152,7 @@ const Login = () => {
       const checkAndRedirect = async () => {
         console.log(user);
         if (isLoggedin) {
-          navigate("/PurchasePa"); // 원하는 페이지로 리다이렉트
+          navigate("/"); // 원하는 페이지로 리다이렉트
         }
       };
       checkAndRedirect();
@@ -217,7 +217,8 @@ const Login = () => {
         signUpData.id,
         signUpData.password,
         verifiedEmail,
-        signUpData.phone
+        signUpData.phone,
+        signUpData.name
       );
 
       if (res.data) {
@@ -248,6 +249,7 @@ const Login = () => {
                   render={({ onClick }) => {
                     return (
                       <button
+                        type="button"
                         onClick={(e) => {
                           e.preventDefault();
                           onClick();
@@ -300,7 +302,7 @@ const Login = () => {
           <Input
             type="text"
             name="id"
-            placeholder="Name"
+            placeholder="ID"
             value={signUpData.id}
             onChange={(e) => {
               textChange(e);
@@ -327,6 +329,15 @@ const Login = () => {
             onFocus={validatePassword}
           />
           {dataErrors.password && <ErrorText>{dataErrors.password}</ErrorText>}
+          <Input
+            type="text"
+            name="name"
+            placeholder="Name"
+            value={signUpData.name}
+            onChange={(e) => {
+              textChange(e);
+            }}
+          />
           <Input
             type="text"
             name="phone"

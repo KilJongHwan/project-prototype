@@ -34,11 +34,11 @@ const AxiosApi = {
   },
 
   // 회원가입
-  memberSignup: async (id, password, email, phone) => {
+  memberSignup: async (id, password, email, phone, name) => {
     const signupData = {
       id: id,
       password: password,
-      name: "user",
+      name: name,
       email: email,
       tel: phone,
       cash: "0",

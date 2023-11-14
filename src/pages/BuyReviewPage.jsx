@@ -6,6 +6,38 @@ import LoginLogoutButton from "../components/LoginLogoutButtonComponent";
 import { useUser } from "../context/Context";
 import { useNavigate } from "react-router-dom";
 import AxiosApi from "../api/AxiosApi";
+import styled from "styled-components";
+
+const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+`;
+
+const ContentWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  width: 100%;
+  max-width: 1200px;
+  margin-top: 2rem;
+  @media (max-width: 960px) {
+    flex-direction: column;
+    align-items: center;
+  }
+`;
+
+const ReviewSectionContainer = styled.div`
+  flex: 1;
+`;
+
+const BookPurchaseBlock = styled.div`
+  flex: 1;
+`;
 
 const BuyReviewPg = () => {
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
@@ -174,18 +206,28 @@ const BuyReviewPg = () => {
   const viewPreview = () => {};
 
   return (
-    <div>
+    <Container>
       <LoginLogoutButton />
       {bookInfo && (
-        <BookPurchase
-          info={bookInfo}
-          isLoggedIn={isLoggedin}
-          isInCart={isInCart}
-          isPurchased={isPurchased}
-          onAddToCart={addToCart}
-          onPurchase={purchaseBook}
-          onPreview={viewPreview}
-        />
+        <ContentWrapper>
+          <BookPurchaseBlock>
+            <BookPurchase
+              info={bookInfo}
+              isLoggedIn={isLoggedin}
+              isInCart={isInCart}
+              isPurchased={isPurchased}
+              onAddToCart={addToCart}
+              onPurchase={purchaseBook}
+              onPreview={viewPreview}
+            />
+          </BookPurchaseBlock>
+          <ReviewSectionContainer>
+            <ReviewSection
+              openReviewModal={openReviewModal}
+              bookInfo={bookInfo}
+            />
+          </ReviewSectionContainer>
+        </ContentWrapper>
       )}
 
       <ReviewModal
@@ -193,8 +235,7 @@ const BuyReviewPg = () => {
         onSubmit={reviewSubmit}
         closeModal={closeReviewModal}
       />
-      <ReviewSection openReviewModal={openReviewModal} bookInfo={bookInfo} />
-    </div>
+    </Container>
   );
 };
 
