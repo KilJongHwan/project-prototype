@@ -4,16 +4,19 @@ import PurchaseModal from "../util/PurchaseModal";
 import { useState } from "react";
 
 const BookPurchaseBlock = styled.div`
-  background: #282828;
   color: #999;
   display: flex;
   flex-direction: row;
-  margin: 120px auto;
   max-width: 1200px;
   min-height: 100vh;
+  max-width: 1200px; // 컨테이너의 최대 너비 설정
+  margin: 0; // 좌우 중앙에 배치
   padding: 2rem;
   position: relative;
 
+  @media screen and (max-width: 768px) {
+    padding: 0 15px 35px 15px; // 화면이 768px 이하일 때 패딩 변경
+  }
   .coverimg {
     flex: 0 0 50%;
     padding: 16px;
@@ -41,17 +44,15 @@ const BookPurchaseBlock = styled.div`
     transform: translateX(0);
   }
   h2 {
-    width: 100%;
     font-size: 24px;
     font-weight: bold;
-    color: #999;
+    color: #333;
     margin-bottom: 15px;
-    padding-bottom: 8px;
-    border-bottom: 2px solid #999;
-    text-align: center;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
-    -webkit-font-smoothing: antialiased;
+    padding: 10px 0 8px 0;
+    border-bottom: 2px solid #7d8e9e;
+    text-transform: uppercase; /* 텍스트를 대문자로 변환 */
   }
+
   hr {
     position: relative;
     border: none;
@@ -83,9 +84,23 @@ const BookPurchaseBlock = styled.div`
   }
 
   .contents {
+    position: relative;
     display: flex;
     align-items: center;
     width: 100%;
+    h2 {
+      position: relative;
+      width: 100%;
+      font-size: 24px;
+      font-weight: bold;
+      margin-bottom: 1000px;
+      padding-bottom: 8px;
+      -webkit-font-smoothing: antialiased;
+      color: #333;
+      padding: 10px 0 8px 0;
+      border-bottom: 2px solid #7d8e9e;
+      text-transform: uppercase; /* 텍스트를 대문자로 변환 */
+    }
 
     .coverimg {
       margin-right: 1rem;
@@ -181,6 +196,7 @@ const BookPurchase = ({
   return (
     <BookPurchaseBlock>
       <div className="contents">
+        <h2>책 정보</h2>
         <div className="coverimg">
           {imageUrl && <img src={imageUrl} alt="CoverImage" />}
         </div>

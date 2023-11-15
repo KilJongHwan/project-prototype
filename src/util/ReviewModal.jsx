@@ -1,7 +1,23 @@
 import React, { useState } from "react";
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
 import { FaStar } from "react-icons/fa";
+const fadeIn = keyframes`
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+`;
 
+const slideUp = keyframes`
+  from {
+    transform: translateY(200px);
+  }
+  to {
+    transform: translateY(0);
+  }
+`;
 const ModalWrapper = styled.div`
   position: fixed;
   top: 0;
@@ -12,6 +28,7 @@ const ModalWrapper = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+  animation: ${fadeIn} 0.3s;
 `;
 
 const ModalContent = styled.div`
@@ -23,6 +40,7 @@ const ModalContent = styled.div`
   max-width: 500px;
   text-align: center;
   margin: 0 20px;
+  animation: ${slideUp} 0.5s;
 `;
 
 const CloseButton = styled.button`

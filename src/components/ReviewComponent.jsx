@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
 import { useUser } from "../context/Context";
 import AxiosApi from "../api/AxiosApi";
 import { FaStar, FaStarHalf } from "react-icons/fa"; // 별 아이콘을 사용하기 위한 import
@@ -7,9 +7,13 @@ import { FaStar, FaStarHalf } from "react-icons/fa"; // 별 아이콘을 사용�
 const ReviewSectionContainer = styled.div`
   padding: 0 30px 70px 30px;
   height: auto;
+  width: 100%; // 너비를 100%로 설정
   max-width: 1200px; // 컨테이너의 최대 너비 설정
   margin: 0 auto; // 좌우 중앙에 배치
 
+  @media screen and (max-width: 768px) {
+    padding: 0 15px 35px 15px; // 화면이 768px 이하일 때 패딩 변경
+  }
   h2 {
     font-size: 24px;
     font-weight: bold;
@@ -95,11 +99,12 @@ const ReviewText = ({ isExpanded, children }) => (
       color: "#333",
       fontStyle: "italic",
       width: "100%",
-      whiteSpace: "nowrap",
-      overflow: "hidden" /* 넘치는 텍스트 숨기기 */,
-      textOverflow: "ellipsis" /* 넘치는 텍스트를 생략 기호로 표시 */,
-      display: "-webkit-box",
+      overflow: isExpanded ? "visible" : "hidden",
+      textOverflow: "ellipsis",
+      display: isExpanded ? "block" : "-webkit-box",
+      whiteSpace: isExpanded ? "normal" : "nowrap",
       WebkitBoxOrient: "vertical",
+      WebkitLineClamp: isExpanded ? "none" : 2,
     }}
   >
     {isExpanded ? children : children.slice(0, 50) + "..."}
@@ -160,6 +165,74 @@ const WriteButton = styled.button`
   }
 `;
 
+const MoreButton = styled.button`
+  --btn-bg: #000;
+  position: relative;
+  width: 100%;
+  height: 40px;
+  padding: 10px 25px;
+  border: none;
+  font-family: "Lato", sans-serif;
+  font-weight: 500;
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: block;
+
+  &::before,
+  &::after {
+    position: absolute;
+    content: "";
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background: var(--btn-bg);
+    opacity: 0;
+    transform: scaleX(0);
+    transition: 0.4s ease-in-out;
+  }
+
+  &::before {
+    top: 0;
+  }
+
+  &::after {
+    bottom: 0;
+  }
+
+  &:hover {
+    letter-spacing: 5px;
+    color: var(--btn-bg);
+    background: transparent;
+
+    &::before,
+    &::after {
+      opacity: 1;
+      transform: scaleX(1.2);
+    }
+  }
+`;
+const Nickname = styled.p`
+  color: #333;
+  font-size: 18px;
+  font-weight: bold;
+  margin: 0;
+  text-align: center;
+`;
+
+const Id = styled.p`
+  color: #666;
+  font-size: 16px;
+  margin: 0;
+  text-align: center;
+`;
+const ReviewDate = styled.p`
+  color: #999;
+  font-size: 14px;
+  margin: 0;
+  text-align: center; // 텍스트 중앙 정렬
+`;
+
 const ReviewSection = ({ openReviewModal, bookInfo }) => {
   const { checkLoginStatus, user } = useUser();
   const [reviews, setReviews] = useState([]);
@@ -168,6 +241,11 @@ const ReviewSection = ({ openReviewModal, bookInfo }) => {
   const [averageRating, setAverageRating] = useState(0);
   const [totalRatings, setTotalRatings] = useState(0);
   const stars = [];
+  const [visibleReviews, setVisibleReviews] = useState(10); // 초기에 보여지는 리뷰 개수 설정
+
+  const showMoreReviews = () => {
+    setVisibleReviews((prevVisibleReviews) => prevVisibleReviews + 10); // 더 보기 클릭 시 보여지는 리뷰 개수 10개 증가
+  };
 
   for (let i = 1; i <= 5; i++) {
     if (i <= averageRating) {
@@ -245,7 +323,7 @@ const ReviewSection = ({ openReviewModal, bookInfo }) => {
             <p>리뷰가 없습니다.</p>
           </li>
         ) : (
-          reviews.map((review, index) => (
+          reviews.slice(0, visibleReviews).map((review, index) => (
             <li key={index}>
               <div
                 style={{
@@ -255,8 +333,12 @@ const ReviewSection = ({ openReviewModal, bookInfo }) => {
                 }}
               >
                 <div style={{ marginRight: "40px", width: "120px" }}>
-                  <p className="review-nickname">{review.memberName}</p>
-                  <p className="review-id">{review.creationDate}</p>
+                  <Nickname>{review.memberName}</Nickname>
+                  <Id>
+                    {review.memberId.substring(0, 2) +
+                      "*".repeat(review.memberId.length - 2)}
+                  </Id>
+                  <ReviewDate>{review.creationDate}</ReviewDate>
                 </div>
                 <div className="star-icons">
                   {Array.from({ length: 5 }).map((_, i) => (
@@ -278,11 +360,25 @@ const ReviewSection = ({ openReviewModal, bookInfo }) => {
                     {review.content}
                   </ReviewText>
                   {review.content.length > 100 && (
-                    <button onClick={() => setExpandedReviewIndex(index)}>
+                    // eslint-disable-next-line jsx-a11y/anchor-is-valid
+                    <a
+                      href="#"
+                      onClick={(e) => {
+                        e.preventDefault(); // 링크 기본 동작 방지
+                        setExpandedReviewIndex(
+                          expandedReviewIndex === index ? null : index
+                        );
+                      }}
+                      style={{
+                        color: "#007bff", // 링크 색상
+                        textDecoration: "none", // 밑줄 없애기
+                        // 추가적인 스타일 적용 가능
+                      }}
+                    >
                       {expandedReviewIndex === index
                         ? "간략히 보기"
                         : "자세히 보기"}
-                    </button>
+                    </a>
                   )}
                 </div>
               </div>
@@ -290,6 +386,11 @@ const ReviewSection = ({ openReviewModal, bookInfo }) => {
           ))
         )}
       </ul>
+      {reviews.length > visibleReviews && ( // 더 보기 버튼. 보여지는 리뷰 개수보다 전체 리뷰 개수가 많을 경우에만 보여짐
+        <MoreButton className="btn-11" onClick={showMoreReviews}>
+          10개 더보기
+        </MoreButton>
+      )}
     </ReviewSectionContainer>
   );
 };
