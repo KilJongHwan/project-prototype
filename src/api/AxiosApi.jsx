@@ -20,8 +20,12 @@ const AxiosApi = {
     return response;
   },
   // 로그인한 유저 정보 가져오기
-  getUserInfo: async (userId) => {
-    return await axios.get(`${DOMAIN}/users/${userId}`);
+  getUserInfo: async (userId, token) => {
+    return await axios.get(`${DOMAIN}/users/${userId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
   },
   // 로그아웃
   memberLogout: async (id, password, token) => {
