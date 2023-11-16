@@ -79,7 +79,12 @@ const CartPage = ({}) => {
       console.log(response); // 서버로부터의 응답 출력
       if (response.status === 200 && response.data) {
         fetchCartItems(); // 책을 구매한 후 장바구니 아이템 목록을 다시 불러옴
-        setCheckedItems([]); // 체크된 아이템 초기화
+        if (response.data) {
+          // 서버에서 성공적으로 처리했다는 메시지를 받았을 때만 체크된 아이템 초기화
+          setCheckedItems([]);
+        } else {
+          alert("구매가능하지 않습니다");
+        }
       } else {
         alert("책을 구매할수 없습니다.");
       }

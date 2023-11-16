@@ -91,6 +91,7 @@ const ReviewSectionContainer = styled.div`
     color: #007bff;
   }
 `;
+
 const ReviewText = ({ isExpanded, children }) => (
   <p
     style={{
@@ -105,9 +106,14 @@ const ReviewText = ({ isExpanded, children }) => (
       whiteSpace: isExpanded ? "normal" : "nowrap",
       WebkitBoxOrient: "vertical",
       WebkitLineClamp: isExpanded ? "none" : 2,
+      wordBreak: "break-all",
     }}
   >
-    {isExpanded ? children : children.slice(0, 50) + "..."}
+    {isExpanded
+      ? children
+      : children.length <= 35
+      ? children
+      : children.slice(0, 35) + "..."}{" "}
   </p>
 );
 
@@ -236,7 +242,8 @@ const ReviewDate = styled.p`
 const ReviewSection = ({ openReviewModal, bookInfo }) => {
   const { checkLoginStatus, user } = useUser();
   const [reviews, setReviews] = useState([]);
-  const [expandedReviewIndex, setExpandedReviewIndex] = useState(null);
+
+  const [expandedReviews, setExpandedReviews] = useState([]);
 
   const [averageRating, setAverageRating] = useState(0);
   const [totalRatings, setTotalRatings] = useState(0);
@@ -356,26 +363,27 @@ const ReviewSection = ({ openReviewModal, bookInfo }) => {
                 <div
                   style={{ width: "100%", height: "100%", overflow: "hidden" }}
                 >
-                  <ReviewText isExpanded={expandedReviewIndex === index}>
+                  <ReviewText isExpanded={expandedReviews.includes(index)}>
                     {review.content}
                   </ReviewText>
-                  {review.content.length > 100 && (
+                  {review.content.length > 35 && (
                     // eslint-disable-next-line jsx-a11y/anchor-is-valid
                     <a
                       href="#"
                       onClick={(e) => {
                         e.preventDefault(); // 링크 기본 동작 방지
-                        setExpandedReviewIndex(
-                          expandedReviewIndex === index ? null : index
+                        setExpandedReviews((prevExpandedReviews) =>
+                          prevExpandedReviews.includes(index)
+                            ? prevExpandedReviews.filter((i) => i !== index)
+                            : [...prevExpandedReviews, index]
                         );
                       }}
                       style={{
                         color: "#007bff", // 링크 색상
                         textDecoration: "none", // 밑줄 없애기
-                        // 추가적인 스타일 적용 가능
                       }}
                     >
-                      {expandedReviewIndex === index
+                      {expandedReviews.includes(index)
                         ? "간략히 보기"
                         : "자세히 보기"}
                     </a>

@@ -39,7 +39,7 @@ const ModalContent = styled.div`
   width: 50%;
   max-width: 500px;
   text-align: center;
-  margin: 0 20px;
+  margin: auto;
   animation: ${slideUp} 0.5s;
 `;
 
@@ -187,7 +187,13 @@ const ReviewModal = ({ isOpen, closeModal, onSubmit }) => {
                 ))}
               </StarRating>
             </div>
-            <div>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+              }}
+            >
               <label htmlFor="reviewText"></label>
               <TextArea
                 id="reviewText"
