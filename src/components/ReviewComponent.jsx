@@ -240,7 +240,7 @@ const ReviewDate = styled.p`
 `;
 
 const ReviewSection = ({ openReviewModal, bookInfo }) => {
-  const { checkLoginStatus, user } = useUser();
+  const { checkLoginStatus } = useUser();
   const [reviews, setReviews] = useState([]);
 
   const [expandedReviews, setExpandedReviews] = useState([]);

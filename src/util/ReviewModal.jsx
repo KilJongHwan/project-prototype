@@ -152,7 +152,7 @@ const ReviewModal = ({ isOpen, closeModal, onSubmit }) => {
   const submitReview = () => {
     if (!reviewText.trim()) {
       // 텍스트가 비어 있는지 확인
-      alert("리뷰 내용을 입력해주세요."); // 알림 표시
+      alert("리뷰 내용을 입력해주세요.");
       return;
     }
     onSubmit({ rating, reviewText });
