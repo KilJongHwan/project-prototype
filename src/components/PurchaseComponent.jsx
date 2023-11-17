@@ -27,8 +27,8 @@ const BookPurchaseBlock = styled.div`
 
     img {
       display: block;
-      height: auto;
       object-fit: cover;
+      height: 100%;
       width: 100%;
     }
   }
@@ -48,6 +48,8 @@ const BookPurchaseBlock = styled.div`
     font-weight: bold;
     color: #333;
     margin-bottom: 15px;
+    margin-left: 2em;
+    margin-right: 2em;
     padding: 10px 0 8px 0;
     border-bottom: 2px solid #7d8e9e;
     text-transform: uppercase; /* 텍스트를 대문자로 변환 */
@@ -88,6 +90,10 @@ const BookPurchaseBlock = styled.div`
     display: flex;
     align-items: center;
     width: 100%;
+    height: 100%;
+    border-radius: 15px;
+    box-shadow: 20px 20px 60px #bebebe, -20px -20px 60px #ffffff; //Neumorphism 스타일 적용
+
     h2 {
       position: relative;
       width: 100%;
@@ -107,9 +113,8 @@ const BookPurchaseBlock = styled.div`
 
       img {
         display: block;
-        width: 100%;
-        max-width: 100%;
-        height: auto;
+        width: 500px;
+        height: 100%;
         object-fit: cover;
       }
     }
@@ -128,22 +133,61 @@ const BookPurchaseBlock = styled.div`
       }
 
       .buttons {
+        display: flex;
+        gap: 1em; // 원하는 간격으로 조정
         margin-top: 1em;
 
         button {
-          margin-right: 1em;
-          padding: 0.75em 1.5em;
-          font-size: 16px;
-          font-weight: bold;
-          color: #fff;
-          background-color: #007bff;
-          border: none;
-          border-radius: 4px;
+          position: relative;
+          display: inline-block;
           cursor: pointer;
-          transition: background-color 0.3s ease;
-
+          outline: none;
+          border: 0;
+          vertical-align: middle;
+          text-decoration: none;
+          font-size: inherit;
+          font-family: inherit;
+          font-weight: 600;
+          color: #382b22;
+          text-transform: uppercase;
+          padding: 1.25em 2em;
+          background: #e0e0e0;
+          border: 2px solid #b3b3b3;
+          border-radius: 0.75em;
+          transform-style: preserve-3d;
+          transition: transform 150ms cubic-bezier(0, 0, 0.58, 1),
+            background 150ms cubic-bezier(0, 0, 0.58, 1);
+          &:before {
+            position: absolute;
+            content: "";
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #d4d4d4;
+            border-radius: inherit;
+            box-shadow: 0 0 0 2px #b3b3b3, 0 0.625em 0 0 #c0c0c0;
+            transform: translate3d(0, 0.75em, -1em);
+            transition: transform 150ms cubic-bezier(0, 0, 0.58, 1),
+              box-shadow 150ms cubic-bezier(0, 0, 0.58, 1);
+          }
           &:hover {
-            background-color: #0056b3;
+            background: #c0c0c0;
+            transform: translate(0, 0.25em);
+            &:before {
+              box-shadow: 0 0 0 2px #b3b3b3, 0 0.5em 0 0 #b3b3b3;
+              transform: translate3d(0, 0.5em, -1em);
+            }
+          }
+          &:active {
+            background: #a9a9a9;
+            transform: translate(0em, 0.75em);
+            &:before {
+              box-shadow: 0 0 0 2px #b3b3b3, 0 0 #a9a9a9;
+              transform: translate3d(0, 0, -1em);
+            }
           }
         }
       }

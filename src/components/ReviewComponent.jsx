@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import styled, { keyframes } from "styled-components";
+import styled from "styled-components";
 import { useUser } from "../context/Context";
 import AxiosApi from "../api/AxiosApi";
 import { FaStar, FaStarHalf } from "react-icons/fa"; // 별 아이콘을 사용하기 위한 import
@@ -131,8 +131,8 @@ const WriteButton = styled.button`
   color: #382b22;
   text-transform: uppercase;
   padding: 1.25em 2em;
-  background: #fff0f0;
-  border: 2px solid #b18597;
+  background: #e0e0e0;
+  border: 2px solid #b3b3b3;
   border-radius: 0.75em;
   transform-style: preserve-3d;
   transition: transform 150ms cubic-bezier(0, 0, 0.58, 1),
@@ -146,26 +146,26 @@ const WriteButton = styled.button`
     left: 0;
     right: 0;
     bottom: 0;
-    background: #f9c4d2;
+    background: #d4d4d4;
     border-radius: inherit;
-    box-shadow: 0 0 0 2px #b18597, 0 0.625em 0 0 #ffe3e2;
+    box-shadow: 0 0 0 2px #b3b3b3, 0 0.625em 0 0 #c0c0c0;
     transform: translate3d(0, 0.75em, -1em);
     transition: transform 150ms cubic-bezier(0, 0, 0.58, 1),
       box-shadow 150ms cubic-bezier(0, 0, 0.58, 1);
   }
   &:hover {
-    background: #ffe9e9;
+    background: #c0c0c0;
     transform: translate(0, 0.25em);
     &:before {
-      box-shadow: 0 0 0 2px #b18597, 0 0.5em 0 0 #ffe3e2;
+      box-shadow: 0 0 0 2px #b3b3b3, 0 0.5em 0 0 #b3b3b3;
       transform: translate3d(0, 0.5em, -1em);
     }
   }
   &:active {
-    background: #ffe9e9;
+    background: #a9a9a9;
     transform: translate(0em, 0.75em);
     &:before {
-      box-shadow: 0 0 0 2px #b18597, 0 0 #ffe3e2;
+      box-shadow: 0 0 0 2px #b3b3b3, 0 0 #a9a9a9;
       transform: translate3d(0, 0, -1em);
     }
   }
